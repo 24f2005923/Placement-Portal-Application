@@ -1,0 +1,33 @@
+{% extends 'base_admin.html' %}
+
+{% block title %}Blacklisted Accounts{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 text-danger">
+            <h2><i class="fas fa-ban me-2"></i>Blacklisted Accounts</h2>
+
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover border-danger">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>#</th>
+                            <th>User Name</th>
+                            <th>Reason</th>
+                            <th>Date Blacklisted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" class="text-center">No blacklisted accounts found (Coming Soon)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

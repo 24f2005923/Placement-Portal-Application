@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <link href="{{ url_for('static', filename='bootstrap-5.0.2-dist/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        #sidebar {
+            min-width: 250px;
+            max-width: 250px;
+            background: #2c3e50;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: #1a252f;
+        }
+
+        #sidebar ul.components {
+            padding: 20px 0;
+            border-bottom: 1px solid #4b545c;
+        }
+
+        #sidebar ul li a {
+            padding: 10px;
+            font-size: 1.1em;
+            display: block;
+            color: white;
+            text-decoration: none;
+        }
+
+        #sidebar ul li a:hover {
+            color: #7386D5;
+            background: #fff;
+        }
+
+        #sidebar ul li.active>a,
+        a[aria-expanded="true"] {
+            color: #fff;
+            background: #6d7fcc;
+        }
+
+        #content {
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Placement Admin</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+            </li>
+            <li class="{% if request.endpoint == 'admin_students' %}active{% endif %}">
+                <a href="{{ url_for('admin_students') }}"><i class="fas fa-users me-2"></i>Students</a>
+            </li>
+            <li class="{% if request.endpoint == 'admin_companies' %}active{% endif %}">
+                <a href="{{ url_for('admin_companies') }}"><i class="fas fa-building me-2"></i>Companies</a>
+            </li>
+            <li class="{% if request.endpoint == 'admin_drives' %}active{% endif %}">
+                <a href="{{ url_for('admin_drives') }}"><i class="fas fa-calendar-check me-2"></i>Placement Drives</a>
+            </li>
+            <li class="{% if request.endpoint == 'admin_applications' %}active{% endif %}">
+                <a href="{{ url_for('admin_applications') }}"><i class="fas fa-file-alt me-2"></i>Applications</a>
+            </li>
+            <li class="{% if request.endpoint == 'admin_blacklisted' %}active{% endif %}">
+                <a href="{{ url_for('admin_blacklisted') }}"><i class="fas fa-ban me-2"></i>Blacklisted</a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="content">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm rounded">
+            <div class="container-fluid">
+
+                <div class="ms-auto">
+                    <span class="navbar-text">
+                        Welcome, Admin
+                    </span>
+                </div>
+            </div>
+        </nav>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
