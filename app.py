@@ -30,6 +30,41 @@ def admin_dashboard():
     else:
         return redirect(url_for("admin_login"))
 
+@app.route("/admin/students")
+def admin_students():
+    if "role" in session and session["role"] == "admin":
+        return render_template("admin_students.html")
+    else:
+        return redirect(url_for("admin_login"))
+
+@app.route("/admin/companies")
+def admin_companies():
+    if "role" in session and session["role"] == "admin":
+        return render_template("admin_companies.html")
+    else:
+        return redirect(url_for("admin_login"))
+
+@app.route("/admin/drives")
+def admin_drives():
+    if "role" in session and session["role"] == "admin":
+        return render_template("admin_drives.html")
+    else:
+        return redirect(url_for("admin_login"))
+
+@app.route("/admin/applications")
+def admin_applications():
+    if "role" in session and session["role"] == "admin":
+        return render_template("admin_applications.html")
+    else:
+        return redirect(url_for("admin_login"))
+
+@app.route("/admin/blacklisted")
+def admin_blacklisted():
+    if "role" in session and session["role"] == "admin":
+        return render_template("admin_blacklisted.html")
+    else:
+        return redirect(url_for("admin_login"))
+
 @app.route("/admin/logout")
 def admin_logout():
     session.pop("role", None)
