@@ -22,9 +22,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for company in companies %}
                         <tr>
-                            <td colspan="6" class="text-center">No companies found (Coming Soon)</td>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ company.name }}</td>
+                            <td>{{ company.industry }}</td>
+                            <td>{{ company.contact_person }}</td>
+                            <td><span class="badge bg-success">{{ company.status }}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No companies found.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
