@@ -22,9 +22,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for app in applications %}
                         <tr>
-                            <td colspan="6" class="text-center">No applications found (Coming Soon)</td>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ app.student_name }} ({{ app.student_id }})</td>
+                            <td>{{ app.drive_title }}</td>
+                            <td><span class="badge bg-warning text-dark">{{ app.status }}</span></td>
+                            <td>{{ app.date_applied }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
+                            </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No applications found.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

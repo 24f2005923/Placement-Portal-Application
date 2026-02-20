@@ -22,9 +22,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for student in students %}
                         <tr>
-                            <td colspan="6" class="text-center">No students found (Coming Soon)</td>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.department }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                            </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No students found.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Company Login | Placement Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card shadow-lg animate-fade-in" style="border-top: 4px solid #ec4899;">
+                <div class="text-center mb-4">
+                    <div class="feature-icon mx-auto mb-3" style="background: var(--secondary-gradient);">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h2 class="fw-bold">Company Login</h2>
+                    <p class="text-muted">Recruit top talent for your organization</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} rounded-pill px-4">{{ message }}</div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label fw-600">Work Email</label>
+                        <input type="email" name="email"
+                            class="form-control form-control-lg rounded-pill border-light-subtle bg-light"
+                            placeholder="hr@company.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-600">Password</label>
+                        <input type="password" name="password"
+                            class="form-control form-control-lg rounded-pill border-light-subtle bg-light"
+                            placeholder="••••••••" required>
+                    </div>
+                    <div class="mb-4 d-flex justify-content-between align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember">
+                            <label class="form-check-label text-muted small" for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none text-danger">Reset Password</a>
+                    </div>
+                    <button type="submit" class="btn w-100 py-3 mb-4 text-white fw-bold rounded-pill"
+                        style="background: var(--secondary-gradient); border: none; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);">Access
+                        Recruiter Portal</button>
+
+                    <div class="text-center">
+                        <p class="text-muted small">New Partner? <a href="#"
+                                class="text-danger fw-bold text-decoration-none">Register Company</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-600 {
+        font-weight: 600;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.1);
+        border-color: #ec4899;
+    }
+</style>
+{% endblock %}

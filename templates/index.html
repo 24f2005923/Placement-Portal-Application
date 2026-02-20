@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome | Placement Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        padding: 120px 0;
+        position: relative;
+        overflow: hidden;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.05) 0%, transparent 50%);
+    }
+
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        color: var(--text-main);
+        letter-spacing: -2px;
+    }
+
+    .text-gradient {
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+
+    .stats-card {
+        background: #ffffff;
+        border: 1px solid var(--glass-border);
+        padding: 1.5rem;
+        border-radius: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    }
+
+    .stats-number {
+        font-size: 2.2rem;
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.2rem;
+        color: var(--text-main);
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stats-label {
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--primary-gradient);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .glass-card {
+        background: #ffffff;
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 2.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+
+    .glass-card:hover {
+        border-color: #6366f1;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7 animate-fade-in">
+                <h1 class="hero-title">Your Future <br><span class="text-gradient">Career Starts Here</span></h1>
+                <p class="hero-sub">Connect with top-tier companies, manage your applications, and track your
+                    recruitment journey all in one place. The ultimate platform for institutional excellence.</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="btn btn-primary-custom btn-lg">Get Started</a>
+                    <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-4">Learn More</a>
+                </div>
+            </div>
+            <div class="col-lg-5 mt-5 mt-lg-0">
+                <div class="row g-4">
+                    <div class="col-6">
+                        <div class="stats-card animate-fade-in" style="animation-delay: 0.2s;">
+                            <span class="stats-number">500+</span>
+                            <span class="stats-label">Students</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stats-card animate-fade-in" style="animation-delay: 0.4s;">
+                            <span class="stats-number">50+</span>
+                            <span class="stats-label">Companies</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stats-card animate-fade-in" style="animation-delay: 0.6s;">
+                            <span class="stats-number">120+</span>
+                            <span class="stats-label">Drives</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stats-card animate-fade-in" style="animation-delay: 0.8s;">
+                            <span class="stats-number">95%</span>
+                            <span class="stats-label">Success Rate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Why Choose <span class="text-gradient">Placement Hub</span>?</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">We provide a comprehensive ecosystem for both
+                students and administrators to streamline the campus recruitment process.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h4>Fast & Efficient</h4>
+                    <p class="text-muted">Quick application process and real-time updates on drive statuses and
+                        selection results.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="feature-icon" style="background: var(--secondary-gradient);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>Reliable Data</h4>
+                    <p class="text-muted">Secure management of student profiles, company data, and application history.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4>Insightful Analytics</h4>
+                    <p class="text-muted">Comprehensive dashboards for administrators to track placement performance and
+                        trends.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

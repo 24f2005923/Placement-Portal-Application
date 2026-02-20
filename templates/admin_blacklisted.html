@@ -21,9 +21,21 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for student in students %}
                         <tr>
-                            <td colspan="5" class="text-center">No blacklisted accounts found (Coming Soon)</td>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ student.name }} ({{ student.id }})</td>
+                            <td>{{ student.blacklist_reason or 'No reason provided' }}</td>
+                            <td>{{ student.date_blacklisted or 'N/A' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success">Restore</button>
+                            </td>
                         </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">No blacklisted accounts found.</td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
