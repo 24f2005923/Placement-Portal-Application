@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
-from database import init_db
+import os
+from database import init_db, get_db_connection
 from models import Student, Company, Drive, Application, get_counts
 
 app = Flask(__name__)
@@ -31,18 +32,92 @@ def admin_login():
 @app.route("/student/login", methods=["GET", "POST"])
 def student_login():
     if request.method == "POST":
-        # Placeholder for student login logic
-        flash("Student login coming soon!", "info")
-        return redirect(url_for("student_login"))
+        email = request.form["email"]
+        password = request.form["password"]
+        
+        conn = get_db_connection()
+        student = conn.execute("SELECT * FROM students WHERE college_email = ? AND password = ?", (email, password)).fetchone()
+        conn.close()
+        
+        if student:
+            session["role"] = "student"
+            session["student_id"] = student["id"]
+            session["student_name"] = student["name"]
+            flash(f"Welcome back, {student['name']}!", "success")
+            return redirect(url_for("home")) # Placeholder for student dashboard
+        else:
+            flash("Invalid Email or Password", "danger")
+            return redirect(url_for("student_login"))
     return render_template("student_login.html")
+
+@app.route("/student/register", methods=["GET", "POST"])
+def student_register():
+    if request.method == "POST":
+        # Placeholder for student registration logic
+        flash("Student registration successful!", "success")
+        return redirect(url_for("student_login"))
+    return render_template("student_register.html")
 
 @app.route("/company/login", methods=["GET", "POST"])
 def company_login():
     if request.method == "POST":
-        # Placeholder for company login logic
-        flash("Company login coming soon!", "info")
-        return redirect(url_for("company_login"))
+        email = request.form["email"]
+        password = request.form["password"]
+        
+        conn = get_db_connection()
+        company = conn.execute("SELECT * FROM companies WHERE work_email = ? AND password = ?", (email, password)).fetchone()
+        conn.close()
+        
+        if company:
+            session["role"] = "company"
+            session["company_id"] = company["id"]
+            session["company_name"] = company["name"]
+            flash(f"Logged in successfully as {company['name']}", "success")
+            return redirect(url_for("company_dashboard"))
+        else:
+            flash("Invalid Email or Password", "danger")
+            return redirect(url_for("company_login"))
+            
     return render_template("company_login.html")
+
+@app.route("/company/register", methods=["GET", "POST"])
+def company_register():
+    if request.method == "POST":
+        # Placeholder for company registration logic
+        flash("Company registration submitted for approval!", "success")
+        return redirect(url_for("company_login"))
+    return render_template("company_register.html")
+
+# Company Panel Routes
+@app.route("/company/dashboard")
+def company_dashboard():
+    return render_template("company_dashboard.html")
+
+@app.route("/company/profile")
+def company_profile():
+    return render_template("company_profile.html")
+
+@app.route("/company/create-drive")
+def company_create_drive():
+    return render_template("company_create_drive.html")
+
+@app.route("/company/applications")
+def company_applications():
+    return render_template("company_applications.html")
+
+@app.route("/company/shortlisted")
+def company_shortlisted():
+    return render_template("company_shortlisted.html")
+
+@app.route("/company/selected")
+def company_selected():
+    return render_template("company_selected.html")
+
+@app.route("/company/logout")
+def company_logout():
+    session.pop("role", None)
+    flash("Successfully logged out from company portal", "success")
+    return redirect(url_for("company_login"))
 
 @app.route("/admin/dashboard")
 def admin_dashboard():

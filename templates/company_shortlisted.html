@@ -1,0 +1,47 @@
+{% extends 'base_company.html' %}
+
+{% block title %}Shortlisted Students{% endblock %}
+{% block page_title %}Selection Pipeline - Shortlisted{% endblock %}
+
+{% block content %}
+<div class="card overflow-hidden">
+    <div class="card-header bg-transparent border-0 p-4">
+        <h5 class="fw-bold mb-1">Shortlisted Candidates</h5>
+        <p class="text-muted small mb-0">Students who passed the initial screening</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle table-hover mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4">Student Name</th>
+                    <th>Roll Number</th>
+                    <th>Drive</th>
+                    <th>Interview Status</th>
+                    <th class="pe-4 text-end">Final Decision</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="ps-4 fw-600">Robert Chen</td>
+                    <td>2023CS202</td>
+                    <td>Software Engineer Intern</td>
+                    <td><span class="badge bg-info-subtle text-info rounded-pill px-3">Round 1 Cleared</span></td>
+                    <td class="pe-4 text-end">
+                        <button class="btn btn-sm btn-primary-custom rounded-pill px-4">Select for Offer</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .fw-600 {
+        font-weight: 600;
+    }
+
+    .bg-info-subtle {
+        background-color: #e0f2fe;
+    }
+</style>
+{% endblock %}

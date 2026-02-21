@@ -1,0 +1,76 @@
+{% extends 'base_student.html' %}
+
+{% block title %}Placement Drives{% endblock %}
+{% block page_title %}Active Job Openings{% endblock %}
+
+{% block content %}
+<div class="card p-4 mb-4">
+    <div class="row g-3">
+        <div class="col-md-10">
+            <input type="text" class="form-control rounded-pill px-4 py-2"
+                placeholder="Search by Company, Role, or Skills...">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary-custom w-100 rounded-pill">Search</button>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Drive 1 -->
+    <div class="col-md-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="bg-primary-subtle p-3 rounded-3">
+                    <i class="fas fa-building text-primary fs-4"></i>
+                </div>
+                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">Open</span>
+            </div>
+            <h5 class="fw-bold mb-1">Software Engineer (Intern)</h5>
+            <p class="text-primary fw-bold small mb-3">Google Inc.</p>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="badge bg-light text-dark border small">Python</span>
+                <span class="badge bg-light text-dark border small">React</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="small"><i class="fas fa-money-bill-wave me-2 text-muted"></i> 15.0 LPA</div>
+                <button class="btn btn-sm btn-primary-custom rounded-pill">Apply Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drive 2 -->
+    <div class="col-md-6">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div class="bg-primary-subtle p-3 rounded-3">
+                    <i class="fas fa-building text-primary fs-4"></i>
+                </div>
+                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">Open</span>
+            </div>
+            <h5 class="fw-bold mb-1">Junior System Analyst</h5>
+            <p class="text-primary fw-bold small mb-3">Microsoft</p>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="badge bg-light text-dark border small">SQL</span>
+                <span class="badge bg-light text-dark border small">Cloud</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="small"><i class="fas fa-money-bill-wave me-2 text-muted"></i> 12.5 LPA</div>
+                <button class="btn btn-sm btn-primary-custom rounded-pill">Apply Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-primary-subtle {
+        background-color: #eef2ff;
+    }
+
+    .bg-success-subtle {
+        background-color: #f0fdf4;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'base_company.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Overview Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <!-- Stats Cards -->
+    <div class="col-md-3">
+        <div class="card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stats-icon bg-primary-subtle p-3 rounded-4">
+                    <i class="fas fa-calendar-check text-primary fs-4"></i>
+                </div>
+                <span class="badge bg-success-subtle text-success rounded-pill">+2 New</span>
+            </div>
+            <h3 class="fw-bold mb-1">4</h3>
+            <p class="text-muted mb-0">Active Drives</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stats-icon bg-info-subtle p-3 rounded-4">
+                    <i class="fas fa-file-invoice text-info fs-4"></i>
+                </div>
+                <span class="badge bg-primary-subtle text-primary rounded-pill">Total</span>
+            </div>
+            <h3 class="fw-bold mb-1">156</h3>
+            <p class="text-muted mb-0">Total Applications</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stats-icon bg-warning-subtle p-3 rounded-4">
+                    <i class="fas fa-user-clock text-warning fs-4"></i>
+                </div>
+                <span class="badge bg-warning-subtle text-warning rounded-pill">Pending</span>
+            </div>
+            <h3 class="fw-bold mb-1">24</h3>
+            <p class="text-muted mb-0">To Review</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="stats-icon bg-rose-subtle p-3 rounded-4" style="background-color: #ffe4e6;">
+                    <i class="fas fa-award text-danger fs-4"></i>
+                </div>
+                <span class="badge bg-rose-subtle text-danger rounded-pill"
+                    style="background-color: #ffe4e6;">Final</span>
+            </div>
+            <h3 class="fw-bold mb-1">12</h3>
+            <p class="text-muted mb-0">Hired Students</p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Active Drives Table -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-transparent border-0 p-4 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Recent Placement Drives</h5>
+                <a href="{{ url_for('company_create_drive') }}"
+                    class="btn btn-sm btn-outline-primary rounded-pill px-3">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Drive Title</th>
+                                <th>Category</th>
+                                <th>Date Created</th>
+                                <th>Status</th>
+                                <th class="pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ps-4 fw-600">Software Engineer Intern</td>
+                                <td>Engineering</td>
+                                <td>Oct 12, 2023</td>
+                                <td><span
+                                        class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Active</span>
+                                </td>
+                                <td class="pe-4">
+                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                            class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 fw-600">UI/UX Designer</td>
+                                <td>Design</td>
+                                <td>Oct 10, 2023</td>
+                                <td><span
+                                        class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">Active</span>
+                                </td>
+                                <td class="pe-4">
+                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                            class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-4 fw-600">Product Manager</td>
+                                <td>Management</td>
+                                <td>Oct 05, 2023</td>
+                                <td><span
+                                        class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">Ongoing</span>
+                                </td>
+                                <td class="pe-4">
+                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                            class="fas fa-eye"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-transparent border-0 p-4">
+                <h5 class="fw-bold mb-0">Quick Options</h5>
+            </div>
+            <div class="card-body p-4 pt-0">
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('company_create_drive') }}"
+                        class="btn btn-primary-custom py-3 rounded-4 text-start d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-0 fw-bold">Post New Drive</p>
+                            <small class="opacity-75">Start a new recruitment</small>
+                        </div>
+                        <i class="fas fa-plus"></i>
+                    </a>
+
+                    <a href="{{ url_for('company_profile') }}"
+                        class="btn btn-light py-3 rounded-4 text-start border d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="mb-0 fw-bold">Update Profile</p>
+                            <small class="text-muted">Keep details current</small>
+                        </div>
+                        <i class="fas fa-cog"></i>
+                    </a>
+
+                    <div class="p-3 bg-light rounded-4 mt-2">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <div class="bg-white p-2 rounded-3">
+                                <i class="fas fa-headset text-primary"></i>
+                            </div>
+                            <p class="mb-0 fw-bold">Help & Support</p>
+                        </div>
+                        <p class="small text-muted mb-0">Need help with the portal? Contact our support team at
+                            support@placementhub.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-600 {
+        font-weight: 600;
+    }
+
+    .bg-primary-subtle {
+        background-color: #e0e7ff;
+    }
+
+    .bg-info-subtle {
+        background-color: #e0f2fe;
+    }
+
+    .bg-warning-subtle {
+        background-color: #fef3c7;
+    }
+
+    .bg-success-subtle {
+        background-color: #dcfce7;
+    }
+</style>
+{% endblock %}
