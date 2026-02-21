@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block title %}Company Partnership | Placement Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg animate-fade-in rounded-4 border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <div class="feature-icon mx-auto mb-3" style="background: var(--secondary-gradient);">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h2 class="fw-bold">Company Partnership</h2>
+                        <p class="text-muted">Register your organization to find the best talent</p>
+                    </div>
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Company Details -->
+                            <div class="col-12">
+                                <h5 class="fw-bold text-danger mb-3">Organization Details</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Company ID</label>
+                                <input type="text" name="company_id_field"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="e.g. COMP-101" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Approval Status</label>
+                                <input type="text" class="form-control rounded-pill bg-white border px-4 py-3"
+                                    value="Pending Approval" disabled readonly>
+                                <input type="hidden" name="status" value="Pending">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Company Name</label>
+                                <input type="text" name="company_name"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="TechCorp Solutions" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Website URL</label>
+                                <input type="url" name="website"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="https://www.company.com" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Company Type</label>
+                                <select name="company_type" class="form-select rounded-pill bg-light border-0 px-4 py-3"
+                                    required>
+                                    <option value="" selected disabled>Select Type</option>
+                                    <option value="MNC">MNC</option>
+                                    <option value="Startup">Startup</option>
+                                    <option value="Government">Government / PSU</option>
+                                    <option value="NGO">NGO</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Industry Type</label>
+                                <input type="text" name="industry_type"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="e.g. IT Services, Finance, Manufacturing" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-600">Year of Establishment</label>
+                                <input type="number" name="est_year"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="e.g. 1995" min="1800" max="2026" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-600">Company Size</label>
+                                <select name="company_size" class="form-select rounded-pill bg-light border-0 px-4 py-3"
+                                    required>
+                                    <option value="" selected disabled>Select Size</option>
+                                    <option value="1-50">1-50 Employees</option>
+                                    <option value="51-200">51-200 Employees</option>
+                                    <option value="201-1000">201-1000 Employees</option>
+                                    <option value="1000+">1000+ Employees</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-600">Location</label>
+                                <input type="text" name="location"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="City, Country" required>
+                            </div>
+
+                            <!-- Contact Person -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold text-danger mb-3">Contact Person (HR)</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">HR Contact Name</label>
+                                <input type="text" name="hr_contact"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="Jane Smith" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Work Email</label>
+                                <input type="email" name="work_email"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="hr@company.com" required>
+                            </div>
+
+                            <!-- Security -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold text-danger mb-3">Account Security</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Password</label>
+                                <input type="password" name="password"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3" placeholder="••••••••"
+                                    required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Confirm Password</label>
+                                <input type="password" name="confirm_password"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3" placeholder="••••••••"
+                                    required>
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <button type="submit"
+                                    class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold fs-5"
+                                    style="background: var(--secondary-gradient); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.2);">Register
+                                    Organization</button>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <p class="text-muted">Already a partner? <a href="{{ url_for('company_login') }}"
+                                        class="text-danger fw-bold text-decoration-none">Login Here</a></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-600 {
+        font-weight: 600;
+        color: #4b5563;
+        margin-left: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
+        border: 1px solid #f43f5e !important;
+    }
+
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1.5rem center;
+        background-size: 16px 12px;
+    }
+</style>
+{% endblock %}

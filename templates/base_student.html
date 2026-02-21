@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Panel{% endblock %} | Placement HUB</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #64748b;
+            --sidebar-active-bg: #f5f3ff;
+            --sidebar-active-text: #6366f1;
+            --content-bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--content-bg);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 1.25rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-menu {
+            padding: 1rem;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            padding: 1rem 1rem 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .nav-link.active {
+            background: var(--sidebar-active-bg);
+            color: var(--sidebar-active-text);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Content Area */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+        }
+
+        .top-navbar {
+            background: white;
+            padding: 1rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary-custom {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+            <span class="brand-name">STUDENT HUB</span>
+        </div>
+
+        <div class="sidebar-menu">
+            <a href="{{ url_for('student_dashboard') }}"
+                class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                <i class="fas fa-th-large"></i> <span>Dashboard</span>
+            </a>
+
+            <div class="menu-label">My Profile</div>
+            <a href="{{ url_for('student_view_profile') }}"
+                class="nav-link {% if request.endpoint == 'student_view_profile' %}active{% endif %}">
+                <i class="fas fa-user-circle"></i> <span>View Profile</span>
+            </a>
+            <a href="{{ url_for('student_edit_profile') }}"
+                class="nav-link {% if request.endpoint == 'student_edit_profile' %}active{% endif %}">
+                <i class="fas fa-user-edit"></i> <span>Edit Profile</span>
+            </a>
+
+            <div class="menu-label">Placements</div>
+            <a href="{{ url_for('student_view_drives') }}"
+                class="nav-link {% if request.endpoint == 'student_view_drives' %}active{% endif %}">
+                <i class="fas fa-briefcase"></i> <span>All Drives</span>
+            </a>
+            <a href="{{ url_for('student_search_jobs') }}"
+                class="nav-link {% if request.endpoint == 'student_search_jobs' %}active{% endif %}">
+                <i class="fas fa-search"></i> <span>Search Jobs</span>
+            </a>
+
+            <div class="menu-label">Activity</div>
+            <a href="{{ url_for('student_applications') }}"
+                class="nav-link {% if request.endpoint == 'student_applications' %}active{% endif %}">
+                <i class="fas fa-paper-plane"></i> <span>My Applications</span>
+            </a>
+            <a href="{{ url_for('student_history') }}"
+                class="nav-link {% if request.endpoint == 'student_history' %}active{% endif %}">
+                <i class="fas fa-history"></i> <span>Placement History</span>
+            </a>
+            <a href="{{ url_for('student_notifications') }}"
+                class="nav-link {% if request.endpoint == 'student_notifications' %}active{% endif %}">
+                <i class="fas fa-bell"></i> <span>Notifications</span>
+            </a>
+
+            <div class="menu-label">Account</div>
+            <a href="{{ url_for('student_settings') }}"
+                class="nav-link {% if request.endpoint == 'student_settings' %}active{% endif %}">
+                <i class="fas fa-cog"></i> <span>Settings</span>
+            </a>
+            <a href="{{ url_for('student_logout') }}" class="nav-link text-danger">
+                <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main id="main-content">
+        <div class="top-navbar">
+            <h4 class="fw-bold mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end d-none d-md-block">
+                    <p class="mb-0 fw-bold">{{ session.get('student_name', 'Student User') }}</p>
+                    <p class="mb-0 text-muted small">Student Account</p>
+                </div>
+                <div
+                    style="width: 40px; height: 40px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user text-secondary"></i>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} border-0 shadow-sm rounded-4 px-4">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

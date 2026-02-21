@@ -17,9 +17,15 @@ def init_db():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        roll_number TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        department TEXT NOT NULL,
+        gender TEXT,
+        dob TEXT,
+        college_email TEXT UNIQUE NOT NULL,
+        personal_email TEXT,
+        mobile TEXT,
+        alt_mobile TEXT,
+        password TEXT NOT NULL,
         is_blacklisted BOOLEAN DEFAULT 0,
         blacklist_reason TEXT,
         date_blacklisted TEXT
@@ -30,10 +36,18 @@ def init_db():
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS companies (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        company_id_field TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
-        industry TEXT NOT NULL,
-        contact_person TEXT NOT NULL,
-        status TEXT DEFAULT 'Active'
+        hr_contact TEXT NOT NULL,
+        website TEXT,
+        work_email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        company_type TEXT,
+        est_year INTEGER,
+        company_size TEXT,
+        industry_type TEXT,
+        location TEXT,
+        status TEXT DEFAULT 'Pending'
     )
     ''')
     

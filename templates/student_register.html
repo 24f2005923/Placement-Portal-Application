@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Registration | Placement Hub{% endblock %}
+
+{% block content %}
+<div class="container py-5 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg animate-fade-in rounded-4 border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <div class="feature-icon mx-auto mb-3">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h2 class="fw-bold">Student Registration</h2>
+                        <p class="text-muted">Join the placement portal to kickstart your career</p>
+                    </div>
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="row g-4">
+                            <!-- Basic Information -->
+                            <div class="col-12">
+                                <h5 class="fw-bold text-primary mb-3">Basic Information</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Full Name</label>
+                                <input type="text" name="full_name"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3" placeholder="John Doe"
+                                    required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Register Number / Roll Number</label>
+                                <input type="text" name="roll_number"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="e.g. 2023CS101" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Gender</label>
+                                <select name="gender" class="form-select rounded-pill bg-light border-0 px-4 py-3"
+                                    required>
+                                    <option value="" selected disabled>Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Date of Birth</label>
+                                <input type="date" name="dob"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3" required>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold text-primary mb-3">Contact Information</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Official College Email</label>
+                                <input type="email" name="college_email"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="john.doe@college.edu" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Personal Email</label>
+                                <input type="email" name="personal_email"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="johndoe@gmail.com" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Mobile Number</label>
+                                <input type="tel" name="mobile"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="+91 9876543210" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Alternate Mobile Number</label>
+                                <input type="tel" name="alt_mobile"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                    placeholder="+91 9876543211">
+                            </div>
+
+                            <!-- Security -->
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold text-primary mb-3">Security</h5>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Password</label>
+                                <input type="password" name="password"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3" placeholder="••••••••"
+                                    required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-600">Confirm Password</label>
+                                <input type="password" name="confirm_password"
+                                    class="form-control rounded-pill bg-light border-0 px-4 py-3" placeholder="••••••••"
+                                    required>
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <button type="submit"
+                                    class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold fs-5">Create Student
+                                    Account</button>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <p class="text-muted">Already have an account? <a href="{{ url_for('student_login') }}"
+                                        class="text-primary fw-bold text-decoration-none">Login Here</a></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-600 {
+        font-weight: 600;
+        color: #4b5563;
+        margin-left: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        border: 1px solid #6366f1 !important;
+    }
+
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1.5rem center;
+        background-size: 16px 12px;
+    }
+</style>
+{% endblock %}

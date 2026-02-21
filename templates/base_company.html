@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Company Panel{% endblock %} | Placement HUB</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --secondary-gradient: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            --sidebar-bg: #ffffff;
+            --sidebar-text: #64748b;
+            --sidebar-active-bg: #f8fafc;
+            --sidebar-active-text: #6366f1;
+            --content-bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--content-bg);
+            color: #1e293b;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-menu {
+            padding: 1rem;
+            flex-grow: 1;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            padding: 0 1rem 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.875rem 1rem;
+            color: var(--sidebar-text);
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+
+        .nav-link:hover {
+            background: var(--sidebar-active-bg);
+            color: #1e293b;
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: var(--sidebar-active-bg);
+            color: var(--sidebar-active-text);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .logout-section {
+            padding: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-logout {
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.875rem 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background: #fef2f2;
+            transform: translateX(4px);
+        }
+
+        /* Content Area Styling */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .top-navbar {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 1rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-animate {
+            animation: slideIn 0.5s ease forwards;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-logo">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <span class="brand-name">PLACEMENT HUB</span>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main Menu</div>
+            <a href="{{ url_for('company_dashboard') }}"
+                class="nav-link {% if request.endpoint == 'company_dashboard' %}active{% endif %}">
+                <i class="fas fa-th-large"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('company_profile') }}"
+                class="nav-link {% if request.endpoint == 'company_profile' %}active{% endif %}">
+                <i class="fas fa-building"></i>
+                <span>Company Profile</span>
+            </a>
+
+            <div class="menu-label">Placement Management</div>
+            <a href="{{ url_for('company_create_drive') }}"
+                class="nav-link {% if request.endpoint == 'company_create_drive' %}active{% endif %}">
+                <i class="fas fa-plus-circle"></i>
+                <span>Create Drive</span>
+            </a>
+            <a href="{{ url_for('company_applications') }}"
+                class="nav-link {% if request.endpoint == 'company_applications' %}active{% endif %}">
+                <i class="fas fa-file-invoice"></i>
+                <span>Applications</span>
+            </a>
+
+            <div class="menu-label">Student Tracking</div>
+            <a href="{{ url_for('company_shortlisted') }}"
+                class="nav-link {% if request.endpoint == 'company_shortlisted' %}active{% endif %}">
+                <i class="fas fa-user-check"></i>
+                <span>Shortlisted Students</span>
+            </a>
+            <a href="{{ url_for('company_selected') }}"
+                class="nav-link {% if request.endpoint == 'company_selected' %}active{% endif %}">
+                <i class="fas fa-award"></i>
+                <span>Selected Students</span>
+            </a>
+        </div>
+
+        <div class="logout-section">
+            <a href="{{ url_for('company_logout') }}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <main id="main-content">
+        <div class="top-navbar">
+            <h4 class="fw-bold mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+            <div class="user-profile">
+                <div class="text-end d-none d-md-block">
+                    <p class="mb-0 fw-bold" id="recruiter-name">HR Manager</p>
+                    <p class="mb-0 text-muted small">Recruiter Account</p>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} border-0 shadow-sm rounded-4 px-4 slideInDown animate-fade-in">{{ message
+            }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="main-animate">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
