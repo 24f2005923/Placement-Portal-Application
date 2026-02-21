@@ -43,8 +43,9 @@ def student_login():
             session["role"] = "student"
             session["student_id"] = student["id"]
             session["student_name"] = student["name"]
+            session["student_email"] = student["college_email"]
             flash(f"Welcome back, {student['name']}!", "success")
-            return redirect(url_for("home")) # Placeholder for student dashboard
+            return redirect(url_for("student_dashboard"))
         else:
             flash("Invalid Email or Password", "danger")
             return redirect(url_for("student_login"))
@@ -57,6 +58,67 @@ def student_register():
         flash("Student registration successful!", "success")
         return redirect(url_for("student_login"))
     return render_template("student_register.html")
+
+# Student Panel Routes
+@app.route("/student/dashboard")
+def student_dashboard():
+    if session.get("role") == "student":
+        return render_template("student_dashboard.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/profile")
+def student_view_profile():
+    if session.get("role") == "student":
+        return render_template("student_view_profile.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/profile/edit")
+def student_edit_profile():
+    if session.get("role") == "student":
+        return render_template("student_edit_profile.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/drives")
+def student_view_drives():
+    if session.get("role") == "student":
+        return render_template("student_view_drives.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/search")
+def student_search_jobs():
+    if session.get("role") == "student":
+        return render_template("student_view_drives.html") # Reuse drive view for simplicity
+    return redirect(url_for("student_login"))
+
+@app.route("/student/applications")
+def student_applications():
+    if session.get("role") == "student":
+        return render_template("student_applications.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/history")
+def student_history():
+    if session.get("role") == "student":
+        return render_template("student_history.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/notifications")
+def student_notifications():
+    if session.get("role") == "student":
+        return render_template("student_notifications.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/settings")
+def student_settings():
+    if session.get("role") == "student":
+        return render_template("student_settings.html")
+    return redirect(url_for("student_login"))
+
+@app.route("/student/logout")
+def student_logout():
+    session.clear()
+    flash("Successfully logged out from student portal", "success")
+    return redirect(url_for("student_login"))
 
 @app.route("/company/login", methods=["GET", "POST"])
 def company_login():

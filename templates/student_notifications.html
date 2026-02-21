@@ -1,0 +1,57 @@
+{% extends 'base_student.html' %}
+
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Recent Activity{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">System Notifications</h5>
+            <button class="btn btn-sm btn-light rounded-pill">Mark all as read</button>
+        </div>
+
+        <!-- Notification 1 -->
+        <div class="card p-4 mb-3 border-start border-4 border-primary shadow-sm">
+            <div class="d-flex gap-3">
+                <div class="bg-primary-subtle p-3 rounded-circle"
+                    style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-calendar-check text-primary"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Interview Scheduled</h6>
+                    <p class="text-muted small mb-2">Google has scheduled your interview for Software Engineer role on
+                        Oct 25, 2023.</p>
+                    <span class="text-muted" style="font-size: 0.7rem;">2 hours ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification 2 -->
+        <div class="card p-4 mb-3 border-start border-4 border-success shadow-sm">
+            <div class="d-flex gap-3">
+                <div class="bg-success-subtle p-3 rounded-circle"
+                    style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-check-circle text-success"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1">Application Received</h6>
+                    <p class="text-muted small mb-2">Your application for Microsoft (System Analyst) has been
+                        successfully received.</p>
+                    <span class="text-muted" style="font-size: 0.7rem;">Yesterday</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-primary-subtle {
+        background-color: #eef2ff;
+    }
+
+    .bg-success-subtle {
+        background-color: #f0fdf4;
+    }
+</style>
+{% endblock %}
