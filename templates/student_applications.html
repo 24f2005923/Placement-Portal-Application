@@ -1,0 +1,78 @@
+{% extends 'base_student.html' %}
+
+{% block title %}My Applications{% endblock %}
+{% block page_title %}Application Tracking{% endblock %}
+
+{% block content %}
+<div class="card overflow-hidden">
+    <div class="card-header bg-transparent border-0 p-4">
+        <h5 class="fw-bold mb-1">Your Job Applications</h5>
+        <p class="text-muted small mb-0">Track the status of your submitted applications</p>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle table-hover mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 text-muted small fw-bold">COMPANY</th>
+                    <th class="text-muted small fw-bold">ROLE</th>
+                    <th class="text-muted small fw-bold">DATE APPLIED</th>
+                    <th class="text-muted small fw-bold">STATUS</th>
+                    <th class="pe-4 text-muted small fw-bold text-end">DETAILS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="ps-4 fw-bold">Meta</td>
+                    <td>UI/UX Designer</td>
+                    <td>Oct 15, 2023</td>
+                    <td><span
+                            class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill">In
+                            Review</span></td>
+                    <td class="pe-4 text-end">
+                        <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ps-4 fw-bold">Google</td>
+                    <td>Software Engineer</td>
+                    <td>Oct 12, 2023</td>
+                    <td><span
+                            class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">Interview
+                            Scheduled</span></td>
+                    <td class="pe-4 text-end">
+                        <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ps-4 fw-bold">Amazon</td>
+                    <td>Cloud Intern</td>
+                    <td>Oct 10, 2023</td>
+                    <td><span
+                            class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Not
+                            Selected</span></td>
+                    <td class="pe-4 text-end">
+                        <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .bg-warning-subtle {
+        background-color: #fffbeb;
+    }
+
+    .bg-info-subtle {
+        background-color: #eff6ff;
+    }
+
+    .bg-danger-subtle {
+        background-color: #fef2f2;
+    }
+</style>
+{% endblock %}

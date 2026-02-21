@@ -1,0 +1,33 @@
+{% extends 'base_student.html' %}
+
+{% block title %}Settings{% endblock %}
+{% block page_title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-4">Change Password</h5>
+            <form>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">Current Password</label>
+                    <input type="password" class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                        placeholder="••••••••">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">New Password</label>
+                    <input type="password" class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                        placeholder="••••••••">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">Confirm New Password</label>
+                    <input type="password" class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                        placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold">Update
+                    Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
