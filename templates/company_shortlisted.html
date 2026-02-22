@@ -21,15 +21,23 @@
                 </tr>
             </thead>
             <tbody>
+                {% if students %}
+                {% for student in students %}
                 <tr>
-                    <td class="ps-4 fw-600">Robert Chen</td>
-                    <td>2023CS202</td>
-                    <td>Software Engineer Intern</td>
-                    <td><span class="badge bg-info-subtle text-info rounded-pill px-3">Round 1 Cleared</span></td>
+                    <td class="ps-4 fw-600">{{ student.student_name }}</td>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ student.drive_title }}</td>
+                    <td><span class="badge bg-info-subtle text-info rounded-pill px-3">Interviewing</span></td>
                     <td class="pe-4 text-end">
                         <button class="btn btn-sm btn-primary-custom rounded-pill px-4">Select for Offer</button>
                     </td>
                 </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">No students shortlisted yet.</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

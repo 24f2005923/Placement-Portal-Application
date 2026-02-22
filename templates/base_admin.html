@@ -20,6 +20,37 @@
             background: #2c3e50;
             color: white;
             transition: all 0.3s;
+            height: 100vh;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .components {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* Custom Scrollbar for Admin Sidebar */
+        .components::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .components::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .components::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
         }
 
         #sidebar .sidebar-header {
@@ -45,17 +76,9 @@
             background: #fff;
         }
 
-        #sidebar ul li.active>a,
-        a[aria-expanded="true"] {
+        #sidebar ul li.active>a {
             color: #fff;
             background: #6d7fcc;
-        }
-
-        #content {
-            width: 100%;
-            padding: 20px;
-            min-height: 100vh;
-            transition: all 0.3s;
         }
     </style>
 </head>

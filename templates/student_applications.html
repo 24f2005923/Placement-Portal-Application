@@ -21,42 +21,29 @@
                 </tr>
             </thead>
             <tbody>
+                {% if applications %}
+                {% for app in applications %}
                 <tr>
-                    <td class="ps-4 fw-bold">Meta</td>
-                    <td>UI/UX Designer</td>
-                    <td>Oct 15, 2023</td>
-                    <td><span
-                            class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill">In
-                            Review</span></td>
+                    <td class="ps-4 fw-bold">{{ app.company_name }}</td>
+                    <td>{{ app.drive_title }}</td>
+                    <td>{{ app.date_applied }}</td>
+                    <td>
+                        <span
+                            class="badge {% if app.status == 'Pending' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
+                            {{ app.status }}
+                        </span>
+                    </td>
                     <td class="pe-4 text-end">
                         <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
                                 class="fas fa-chevron-right"></i></button>
                     </td>
                 </tr>
+                {% endfor %}
+                {% else %}
                 <tr>
-                    <td class="ps-4 fw-bold">Google</td>
-                    <td>Software Engineer</td>
-                    <td>Oct 12, 2023</td>
-                    <td><span
-                            class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">Interview
-                            Scheduled</span></td>
-                    <td class="pe-4 text-end">
-                        <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
-                                class="fas fa-chevron-right"></i></button>
-                    </td>
+                    <td colspan="5" class="text-center py-4 text-muted">You haven't applied to any drives yet.</td>
                 </tr>
-                <tr>
-                    <td class="ps-4 fw-bold">Amazon</td>
-                    <td>Cloud Intern</td>
-                    <td>Oct 10, 2023</td>
-                    <td><span
-                            class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 rounded-pill">Not
-                            Selected</span></td>
-                    <td class="pe-4 text-end">
-                        <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
-                                class="fas fa-chevron-right"></i></button>
-                    </td>
-                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

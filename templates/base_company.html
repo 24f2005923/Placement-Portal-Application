@@ -81,6 +81,25 @@
         .sidebar-menu {
             padding: 1rem;
             flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        .sidebar-menu::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar-menu::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .sidebar-menu:hover::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .menu-label {
@@ -222,7 +241,7 @@
         </div>
 
         <div class="sidebar-menu">
-            <div class="menu-label">Main Menu</div>
+
             <a href="{{ url_for('company_dashboard') }}"
                 class="nav-link {% if request.endpoint == 'company_dashboard' %}active{% endif %}">
                 <i class="fas fa-th-large"></i>
@@ -234,7 +253,7 @@
                 <span>Company Profile</span>
             </a>
 
-            <div class="menu-label">Placement Management</div>
+
             <a href="{{ url_for('company_create_drive') }}"
                 class="nav-link {% if request.endpoint == 'company_create_drive' %}active{% endif %}">
                 <i class="fas fa-plus-circle"></i>
@@ -246,7 +265,7 @@
                 <span>Applications</span>
             </a>
 
-            <div class="menu-label">Student Tracking</div>
+
             <a href="{{ url_for('company_shortlisted') }}"
                 class="nav-link {% if request.endpoint == 'company_shortlisted' %}active{% endif %}">
                 <i class="fas fa-user-check"></i>
