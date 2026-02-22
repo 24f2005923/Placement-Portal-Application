@@ -63,25 +63,77 @@ def student_register():
 @app.route("/student/dashboard")
 def student_dashboard():
     if session.get("role") == "student":
-        return render_template("student_dashboard.html")
+        student_id = session.get("student_id")
+        conn = get_db_connection()
+        
+        # Get counts for student
+        app_count = conn.execute("SELECT COUNT(*) FROM applications WHERE student_id = ?", (student_id,)).fetchone()[0]
+        
+        # Get latest drives
+        latest_drives = conn.execute("""
+            SELECT drives.*, companies.name as company_name 
+            FROM drives 
+            JOIN companies ON drives.company_id = companies.id 
+            ORDER BY drives.id DESC LIMIT 5
+        """).fetchall()
+        
+        # Get recent applications
+        recent_apps = conn.execute("""
+            SELECT applications.*, drives.title as drive_title, companies.name as company_name 
+            FROM applications 
+            JOIN drives ON applications.drive_id = drives.id 
+            JOIN companies ON drives.company_id = companies.id 
+            WHERE applications.student_id = ? 
+            ORDER BY applications.id DESC LIMIT 3
+        """, (student_id,)).fetchall()
+        
+        conn.close()
+        
+        return render_template("student_dashboard.html", 
+                               app_count=app_count, 
+                               latest_drives=latest_drives, 
+                               recent_apps=recent_apps)
     return redirect(url_for("student_login"))
 
-@app.route("/student/profile")
-def student_view_profile():
+@app.route("/student/profile", methods=["GET", "POST"])
+def student_profile():
     if session.get("role") == "student":
-        return render_template("student_view_profile.html")
-    return redirect(url_for("student_login"))
-
-@app.route("/student/profile/edit")
-def student_edit_profile():
-    if session.get("role") == "student":
-        return render_template("student_edit_profile.html")
+        student_id = session.get("student_id")
+        conn = get_db_connection()
+        
+        if request.method == "POST":
+            name = request.form.get("name")
+            personal_email = request.form.get("personal_email")
+            mobile = request.form.get("mobile")
+            dob = request.form.get("dob")
+            
+            conn.execute("""
+                UPDATE students 
+                SET name = ?, personal_email = ?, mobile = ?, dob = ? 
+                WHERE id = ?
+            """, (name, personal_email, mobile, dob, student_id))
+            conn.commit()
+            session["student_name"] = name
+            flash("Profile updated successfully!", "success")
+            return redirect(url_for("student_profile"))
+            
+        student = conn.execute("SELECT * FROM students WHERE id = ?", (student_id,)).fetchone()
+        conn.close()
+        return render_template("student_profile.html", student=student)
     return redirect(url_for("student_login"))
 
 @app.route("/student/drives")
 def student_view_drives():
     if session.get("role") == "student":
-        return render_template("student_view_drives.html")
+        conn = get_db_connection()
+        drives = conn.execute("""
+            SELECT drives.*, companies.name as company_name 
+            FROM drives 
+            JOIN companies ON drives.company_id = companies.id 
+            WHERE drives.status = 'Open'
+        """).fetchall()
+        conn.close()
+        return render_template("student_view_drives.html", drives=drives)
     return redirect(url_for("student_login"))
 
 @app.route("/student/search")
@@ -93,7 +145,17 @@ def student_search_jobs():
 @app.route("/student/applications")
 def student_applications():
     if session.get("role") == "student":
-        return render_template("student_applications.html")
+        student_id = session.get("student_id")
+        conn = get_db_connection()
+        applications = conn.execute("""
+            SELECT applications.*, drives.title as drive_title, companies.name as company_name 
+            FROM applications 
+            JOIN drives ON applications.drive_id = drives.id 
+            JOIN companies ON drives.company_id = companies.id 
+            WHERE applications.student_id = ?
+        """, (student_id,)).fetchall()
+        conn.close()
+        return render_template("student_applications.html", applications=applications)
     return redirect(url_for("student_login"))
 
 @app.route("/student/history")
@@ -153,7 +215,41 @@ def company_register():
 # Company Panel Routes
 @app.route("/company/dashboard")
 def company_dashboard():
-    return render_template("company_dashboard.html")
+    if session.get("role") == "company":
+        company_id = session.get("company_id")
+        conn = get_db_connection()
+        
+        # Get stats
+        active_drives = conn.execute("SELECT COUNT(*) FROM drives WHERE company_id = ? AND status = 'Open'", (company_id,)).fetchone()[0]
+        total_apps = conn.execute("""
+            SELECT COUNT(*) FROM applications 
+            JOIN drives ON applications.drive_id = drives.id 
+            WHERE drives.company_id = ?
+        """, (company_id,)).fetchone()[0]
+        
+        pending_review = conn.execute("""
+            SELECT COUNT(*) FROM applications 
+            JOIN drives ON applications.drive_id = drives.id 
+            WHERE drives.company_id = ? AND applications.status = 'Pending'
+        """, (company_id,)).fetchone()[0]
+        
+        hired = conn.execute("""
+            SELECT COUNT(*) FROM applications 
+            JOIN drives ON applications.drive_id = drives.id 
+            WHERE drives.company_id = ? AND applications.status = 'Selected'
+        """, (company_id,)).fetchone()[0]
+        
+        # Recent drives
+        recent_drives = conn.execute("SELECT * FROM drives WHERE company_id = ? ORDER BY id DESC LIMIT 5", (company_id,)).fetchall()
+        
+        conn.close()
+        return render_template("company_dashboard.html", 
+                               active_drives=active_drives, 
+                               total_apps=total_apps, 
+                               pending_review=pending_review, 
+                               hired=hired,
+                               recent_drives=recent_drives)
+    return redirect(url_for("company_login"))
 
 @app.route("/company/profile")
 def company_profile():
@@ -165,15 +261,51 @@ def company_create_drive():
 
 @app.route("/company/applications")
 def company_applications():
-    return render_template("company_applications.html")
+    if session.get("role") == "company":
+        company_id = session.get("company_id")
+        conn = get_db_connection()
+        applications = conn.execute("""
+            SELECT applications.*, students.name as student_name, students.roll_number, drives.title as drive_title 
+            FROM applications 
+            JOIN students ON applications.student_id = students.id 
+            JOIN drives ON applications.drive_id = drives.id 
+            WHERE drives.company_id = ?
+        """, (company_id,)).fetchall()
+        conn.close()
+        return render_template("company_applications.html", applications=applications)
+    return redirect(url_for("company_login"))
 
 @app.route("/company/shortlisted")
 def company_shortlisted():
-    return render_template("company_shortlisted.html")
+    if session.get("role") == "company":
+        company_id = session.get("company_id")
+        conn = get_db_connection()
+        students = conn.execute("""
+            SELECT applications.*, students.name as student_name, students.roll_number, drives.title as drive_title 
+            FROM applications 
+            JOIN students ON applications.student_id = students.id 
+            JOIN drives ON applications.drive_id = drives.id 
+            WHERE drives.company_id = ? AND applications.status = 'Shortlisted'
+        """, (company_id,)).fetchall()
+        conn.close()
+        return render_template("company_shortlisted.html", students=students)
+    return redirect(url_for("company_login"))
 
 @app.route("/company/selected")
 def company_selected():
-    return render_template("company_selected.html")
+    if session.get("role") == "company":
+        company_id = session.get("company_id")
+        conn = get_db_connection()
+        students = conn.execute("""
+            SELECT applications.*, students.name as student_name, students.roll_number, drives.title as drive_title 
+            FROM applications 
+            JOIN students ON applications.student_id = students.id 
+            JOIN drives ON applications.drive_id = drives.id 
+            WHERE drives.company_id = ? AND applications.status = 'Selected'
+        """, (company_id,)).fetchall()
+        conn.close()
+        return render_template("company_selected.html", students=students)
+    return redirect(url_for("company_login"))
 
 @app.route("/company/logout")
 def company_logout():

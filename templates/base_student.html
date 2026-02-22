@@ -164,27 +164,19 @@
                 <i class="fas fa-th-large"></i> <span>Dashboard</span>
             </a>
 
-            <div class="menu-label">My Profile</div>
-            <a href="{{ url_for('student_view_profile') }}"
-                class="nav-link {% if request.endpoint == 'student_view_profile' %}active{% endif %}">
-                <i class="fas fa-user-circle"></i> <span>View Profile</span>
-            </a>
-            <a href="{{ url_for('student_edit_profile') }}"
-                class="nav-link {% if request.endpoint == 'student_edit_profile' %}active{% endif %}">
-                <i class="fas fa-user-edit"></i> <span>Edit Profile</span>
+            <a href="{{ url_for('student_profile') }}"
+                class="nav-link {% if request.endpoint == 'student_profile' %}active{% endif %}">
+                <i class="fas fa-user-circle"></i> <span>My Profile</span>
             </a>
 
-            <div class="menu-label">Placements</div>
+
             <a href="{{ url_for('student_view_drives') }}"
                 class="nav-link {% if request.endpoint == 'student_view_drives' %}active{% endif %}">
                 <i class="fas fa-briefcase"></i> <span>All Drives</span>
             </a>
-            <a href="{{ url_for('student_search_jobs') }}"
-                class="nav-link {% if request.endpoint == 'student_search_jobs' %}active{% endif %}">
-                <i class="fas fa-search"></i> <span>Search Jobs</span>
-            </a>
 
-            <div class="menu-label">Activity</div>
+
+
             <a href="{{ url_for('student_applications') }}"
                 class="nav-link {% if request.endpoint == 'student_applications' %}active{% endif %}">
                 <i class="fas fa-paper-plane"></i> <span>My Applications</span>
@@ -198,7 +190,7 @@
                 <i class="fas fa-bell"></i> <span>Notifications</span>
             </a>
 
-            <div class="menu-label">Account</div>
+
             <a href="{{ url_for('student_settings') }}"
                 class="nav-link {% if request.endpoint == 'student_settings' %}active{% endif %}">
                 <i class="fas fa-cog"></i> <span>Settings</span>

@@ -14,9 +14,10 @@
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
+                            <th>Company ID</th>
                             <th>Company Name</th>
-                            <th>Industry</th>
-                            <th>Contact Person</th>
+                            <th>HR Contact</th>
+                            <th>Work Email</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -25,9 +26,10 @@
                         {% for company in companies %}
                         <tr>
                             <td>{{ loop.index }}</td>
+                            <td>{{ company.company_id_field }}</td>
                             <td>{{ company.name }}</td>
-                            <td>{{ company.industry }}</td>
-                            <td>{{ company.contact_person }}</td>
+                            <td>{{ company.hr_contact }}</td>
+                            <td>{{ company.work_email }}</td>
                             <td><span class="badge bg-success">{{ company.status }}</span></td>
                             <td>
                                 <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
