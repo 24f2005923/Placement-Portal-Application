@@ -14,24 +14,46 @@
                     <thead class="table-dark">
                         <tr>
                             <th>#</th>
-                            <th>Roll Number</th>
+                            <th>Reg Number</th>
                             <th>Name</th>
-                            <th>College Email</th>
-                            <th>Mobile</th>
+                            <th>Institutional Email</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for student in students %}
+                        {% for account in students %}
                         <tr>
                             <td>{{ loop.index }}</td>
-                            <td>{{ student.roll_number }}</td>
-                            <td>{{ student.name }}</td>
-                            <td>{{ student.college_email }}</td>
-                            <td>{{ student.mobile }}</td>
+                            <td>{{ account.student_profile.university_register_number if account.student_profile else
+                                'N/A' }}</td>
+                            <td>{{ account.student_profile.full_name if account.student_profile else 'N/A' }}</td>
+                            <td>{{ account.login_identifier }}</td>
                             <td>
+                                <span
+                                    class="badge {% if account.account_state.value == 'active' %}bg-success{% elif account.account_state.value == 'pending_verification' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                    {{ account.account_state.value|replace('_', ' ')|title }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if is_pending %}
+                                <div class="d-flex gap-1">
+                                    <form
+                                        action="{{ url_for('admin.verify_student', account_id=account.id, action='approve') }}"
+                                        method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success" title="Approve"><i
+                                                class="fas fa-check"></i></button>
+                                    </form>
+                                    <form
+                                        action="{{ url_for('admin.verify_student', account_id=account.id, action='reject') }}"
+                                        method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Reject"><i
+                                                class="fas fa-times"></i></button>
+                                    </form>
+                                </div>
+                                {% else %}
                                 <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                {% endif %}
                             </td>
                         </tr>
                         {% else %}

@@ -68,7 +68,7 @@
                                 <td>{{ drive.title }}</td>
                                 <td>{{ drive.date }}</td>
                                 <td class="pe-4 text-end">
-                                    <a href="{{ url_for('student_view_drives') }}"
+                                    <a href="{{ url_for('student.placements') }}"
                                         class="btn btn-sm btn-outline-primary rounded-pill">View Details</a>
                                 </td>
                             </tr>
@@ -106,7 +106,7 @@
                 {% endif %}
                 <hr>
                 <div class="text-center">
-                    <a href="{{ url_for('student_applications') }}" class="text-decoration-none small fw-bold">View all
+                    <a href="{{ url_for('student.applications') }}" class="text-decoration-none small fw-bold">View all
                         applications</a>
                 </div>
             </div>

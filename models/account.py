@@ -24,6 +24,9 @@ class Account(db.Model):
         default=AccountState.PENDING_VERIFICATION,
     )
 
+    # Relationships
+    student_profile = db.relationship("StudentProfile", back_populates="account", uselist=False)
+
     created_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,

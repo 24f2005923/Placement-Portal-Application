@@ -159,43 +159,43 @@
         </div>
 
         <div class="sidebar-menu">
-            <a href="{{ url_for('student_dashboard') }}"
-                class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+            <a href="{{ url_for('student.dashboard') }}"
+                class="nav-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}">
                 <i class="fas fa-th-large"></i> <span>Dashboard</span>
             </a>
 
-            <a href="{{ url_for('student_profile') }}"
-                class="nav-link {% if request.endpoint == 'student_profile' %}active{% endif %}">
+            <a href="{{ url_for('student.profile') }}"
+                class="nav-link {% if request.endpoint == 'student.profile' %}active{% endif %}">
                 <i class="fas fa-user-circle"></i> <span>My Profile</span>
             </a>
 
 
-            <a href="{{ url_for('student_view_drives') }}"
-                class="nav-link {% if request.endpoint == 'student_view_drives' %}active{% endif %}">
+            <a href="{{ url_for('student.placements') }}"
+                class="nav-link {% if request.endpoint == 'student.placements' %}active{% endif %}">
                 <i class="fas fa-briefcase"></i> <span>All Drives</span>
             </a>
 
 
 
-            <a href="{{ url_for('student_applications') }}"
-                class="nav-link {% if request.endpoint == 'student_applications' %}active{% endif %}">
+            <a href="{{ url_for('student.applications') }}"
+                class="nav-link {% if request.endpoint == 'student.applications' %}active{% endif %}">
                 <i class="fas fa-paper-plane"></i> <span>My Applications</span>
             </a>
-            <a href="{{ url_for('student_history') }}"
-                class="nav-link {% if request.endpoint == 'student_history' %}active{% endif %}">
+            <a href="{{ url_for('student.history') }}"
+                class="nav-link {% if request.endpoint == 'student.history' %}active{% endif %}">
                 <i class="fas fa-history"></i> <span>Placement History</span>
             </a>
-            <a href="{{ url_for('student_notifications') }}"
-                class="nav-link {% if request.endpoint == 'student_notifications' %}active{% endif %}">
+            <a href="{{ url_for('student.notifications') }}"
+                class="nav-link {% if request.endpoint == 'student.notifications' %}active{% endif %}">
                 <i class="fas fa-bell"></i> <span>Notifications</span>
             </a>
 
 
-            <a href="{{ url_for('student_settings') }}"
-                class="nav-link {% if request.endpoint == 'student_settings' %}active{% endif %}">
+            <a href="{{ url_for('student.settings') }}"
+                class="nav-link {% if request.endpoint == 'student.settings' %}active{% endif %}">
                 <i class="fas fa-cog"></i> <span>Settings</span>
             </a>
-            <a href="{{ url_for('student_logout') }}" class="nav-link text-danger">
+            <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </a>
         </div>
