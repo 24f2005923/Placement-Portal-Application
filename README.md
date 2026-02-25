@@ -1,2 +1,2 @@
 # Placement-Portal-Application
-This is a project that helps Institution in managing campus recruitment activities effeciently.
+This project helps institutions manage campus recruitment activities efficiently.
