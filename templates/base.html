@@ -123,11 +123,9 @@
                         <a class="nav-link" href="#">About Us</a>
                     </li>
                     <li class="nav-item ms-lg-3">
-                        <a href="{{ url_for('student_login') }}"
+                        <a href="{{ url_for('auth.student_login') }}"
                             class="btn btn-outline-primary me-2 rounded-pill px-4">Student Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ url_for('company_login') }}" class="btn btn-primary-custom">Company Login</a>
+                        <a href="{{ url_for('auth.company_login') }}" class="btn btn-primary-custom">Company Login</a>
                     </li>
                 </ul>
             </div>

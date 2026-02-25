@@ -9,7 +9,8 @@
             <div class="card shadow-lg animate-fade-in rounded-4 border-0">
                 <div class="card-body p-5">
                     <div class="text-center mb-4">
-                        <div class="feature-icon mx-auto mb-3">
+                        <div class="feature-icon mx-auto mb-3"
+                            style="background: var(--primary-gradient); width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">
                             <i class="fas fa-user-graduate"></i>
                         </div>
                         <h2 class="fw-bold">Student Login</h2>
@@ -26,13 +27,13 @@
 
                     <form method="POST">
                         <div class="mb-4">
-                            <label class="form-label fw-600">Email Address</label>
-                            <input type="email" name="email"
+                            <label class="form-label fw-bold small">Email Address</label>
+                            <input type="text" name="email"
                                 class="form-control form-control-lg rounded-pill border-light-subtle bg-light"
                                 placeholder="name@college.edu" required>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label fw-600">Password</label>
+                            <label class="form-label fw-bold small">Password</label>
                             <input type="password" name="password"
                                 class="form-control form-control-lg rounded-pill border-light-subtle bg-light"
                                 placeholder="••••••••" required>
@@ -44,11 +45,12 @@
                             </div>
                             <a href="#" class="small text-decoration-none text-primary">Forgot Password?</a>
                         </div>
-                        <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-4">Login to Dashboard</button>
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 mb-4 rounded-pill fw-bold">Login
+                            to Dashboard</button>
 
                         <div class="text-center">
                             <p class="text-muted small">Don't have an account? <a
-                                    href="{{ url_for('student_register') }}"
+                                    href="{{ url_for('auth.student_register') }}"
                                     class="text-primary fw-bold text-decoration-none">Register Now</a></p>
                         </div>
                     </form>
@@ -57,15 +59,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .fw-600 {
-        font-weight: 600;
-    }
-
-    .form-control:focus {
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        border-color: #6366f1;
-    }
-</style>
 {% endblock %}

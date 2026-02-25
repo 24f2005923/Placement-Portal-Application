@@ -242,44 +242,44 @@
 
         <div class="sidebar-menu">
 
-            <a href="{{ url_for('company_dashboard') }}"
-                class="nav-link {% if request.endpoint == 'company_dashboard' %}active{% endif %}">
+            <a href="{{ url_for('company.dashboard') }}"
+                class="nav-link {% if request.endpoint == 'company.dashboard' %}active{% endif %}">
                 <i class="fas fa-th-large"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="{{ url_for('company_profile') }}"
-                class="nav-link {% if request.endpoint == 'company_profile' %}active{% endif %}">
+            <a href="{{ url_for('company.dashboard') }}"
+                class="nav-link {% if request.endpoint == 'company.profile' %}active{% endif %}">
                 <i class="fas fa-building"></i>
                 <span>Company Profile</span>
             </a>
 
 
-            <a href="{{ url_for('company_create_drive') }}"
-                class="nav-link {% if request.endpoint == 'company_create_drive' %}active{% endif %}">
+            <a href="{{ url_for('company.create_drive') }}"
+                class="nav-link {% if request.endpoint == 'company.create_drive' %}active{% endif %}">
                 <i class="fas fa-plus-circle"></i>
                 <span>Create Drive</span>
             </a>
-            <a href="{{ url_for('company_applications') }}"
-                class="nav-link {% if request.endpoint == 'company_applications' %}active{% endif %}">
+            <a href="{{ url_for('company.applications') }}"
+                class="nav-link {% if request.endpoint == 'company.applications' %}active{% endif %}">
                 <i class="fas fa-file-invoice"></i>
                 <span>Applications</span>
             </a>
 
 
-            <a href="{{ url_for('company_shortlisted') }}"
-                class="nav-link {% if request.endpoint == 'company_shortlisted' %}active{% endif %}">
+            <a href="{{ url_for('company.dashboard') }}"
+                class="nav-link {% if request.endpoint == 'company.shortlisted' %}active{% endif %}">
                 <i class="fas fa-user-check"></i>
                 <span>Shortlisted Students</span>
             </a>
-            <a href="{{ url_for('company_selected') }}"
-                class="nav-link {% if request.endpoint == 'company_selected' %}active{% endif %}">
+            <a href="{{ url_for('company.dashboard') }}"
+                class="nav-link {% if request.endpoint == 'company.selected' %}active{% endif %}">
                 <i class="fas fa-award"></i>
                 <span>Selected Students</span>
             </a>
         </div>
 
         <div class="logout-section">
-            <a href="{{ url_for('company_logout') }}" class="btn-logout">
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
