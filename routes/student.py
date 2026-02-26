@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, session
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash
+from datetime import datetime
+from database import db
 from utils.decorators import active_account_required
+from models import StudentProfile
 
 student_bp = Blueprint("student", __name__, url_prefix="/student")
 
@@ -11,34 +14,82 @@ def student_required():
 @student_bp.route("/dashboard")
 @active_account_required
 def dashboard():
-    return render_template("student_index.html")
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/dashboard.html", student_name=student_name)
 
-@student_bp.route("/profile")
+@student_bp.route("/profile", methods=["GET", "POST"])
 @active_account_required
 def profile():
-    return render_template("student_profile.html")
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    
+    if request.method == "POST":
+        if profile:
+            profile.full_name = request.form.get("name")
+            profile.personal_email = request.form.get("personal_email")
+            profile.primary_phone = request.form.get("mobile")
+            dob_str = request.form.get("dob")
+            if dob_str:
+                profile.date_of_birth = datetime.strptime(dob_str, '%Y-%m-%d').date()
+            profile.skills = request.form.get("skills")
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+        return redirect(url_for("student.profile"))
+
+    student_data = None
+    if profile:
+        student_data = {
+            "name": profile.full_name,
+            "roll_number": profile.university_register_number,
+            "gender": profile.gender_code,
+            "college_email": profile.institutional_email,
+            "personal_email": profile.personal_email,
+            "mobile": profile.primary_phone,
+            "dob": profile.date_of_birth.strftime('%Y-%m-%d') if profile.date_of_birth else None,
+            "skills": profile.skills
+        }
+    
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/profile.html", student_name=student_name, student=student_data)
 
 @student_bp.route("/placements")
 @active_account_required
 def placements():
-    return render_template("student_placements.html", drives=[])
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/view_drives.html", drives=[], student_name=student_name)
 
 @student_bp.route("/applications")
 @active_account_required
 def applications():
-    return render_template("student_applications.html", applications=[])
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/applications.html", applications=[], student_name=student_name)
 
 @student_bp.route("/history")
 @active_account_required
 def history():
-    return render_template("student_history.html")
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/history.html", student_name=student_name)
 
 @student_bp.route("/notifications")
 @active_account_required
 def notifications():
-    return render_template("student_notifications.html")
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/notifications.html", student_name=student_name)
 
 @student_bp.route("/settings")
 @active_account_required
 def settings():
-    return render_template("student_settings.html")
+    account_id = session.get("account_id")
+    profile = StudentProfile.query.filter_by(account_id=account_id).first()
+    student_name = profile.full_name if profile else "Student User"
+    return render_template("student/settings.html", student_name=student_name)

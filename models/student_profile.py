@@ -16,6 +16,7 @@ class StudentProfile(db.Model):
     primary_phone = db.Column(db.String(20), nullable=False)
     secondary_phone = db.Column(db.String(20), nullable=True)
 
+    skills = db.Column(db.String(500), nullable=True)
     profile_completion_score = db.Column(db.Integer, default=0)
 
     # Relationship back to Account

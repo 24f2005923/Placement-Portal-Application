@@ -26,6 +26,7 @@ class Account(db.Model):
 
     # Relationships
     student_profile = db.relationship("StudentProfile", back_populates="account", uselist=False)
+    company_profile = db.relationship("CompanyProfile", back_populates="account", uselist=False)
 
     created_at = db.Column(
         db.DateTime(timezone=True),

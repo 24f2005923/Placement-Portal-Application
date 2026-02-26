@@ -98,10 +98,6 @@
             <li class="{% if request.endpoint == 'admin.students' %}active{% endif %}">
                 <a href="{{ url_for('admin.students') }}"><i class="fas fa-users me-2"></i>Students</a>
             </li>
-            <li class="{% if request.endpoint == 'admin.pending_students' %}active{% endif %}">
-                <a href="{{ url_for('admin.pending_students') }}"><i class="fas fa-user-clock me-2"></i>Pending
-                    Students</a>
-            </li>
             <li class="{% if request.endpoint == 'admin.companies' %}active{% endif %}">
                 <a href="{{ url_for('admin.companies') }}"><i class="fas fa-building me-2"></i>Companies</a>
             </li>

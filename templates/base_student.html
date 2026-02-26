@@ -207,7 +207,7 @@
             <h4 class="fw-bold mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
             <div class="d-flex align-items-center gap-3">
                 <div class="text-end d-none d-md-block">
-                    <p class="mb-0 fw-bold">{{ session.get('student_name', 'Student User') }}</p>
+                    <p class="mb-0 fw-bold">{{ student_name if student_name else 'Student User' }}</p>
                     <p class="mb-0 text-muted small">Student Account</p>
                 </div>
                 <div

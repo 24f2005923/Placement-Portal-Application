@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash
 from database import db
 from models import Account, AccountRole, AccountState
-from services.account_service import verify_student_account
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -18,45 +17,47 @@ def dashboard():
         # "companies": Account.query.filter_by(role=AccountRole.COMPANY).count(),
         # "drives": Drive.query.count()
     }
-    return render_template("admin_dashboard.html", counts=counts)
+    return render_template("admin/dashboard.html", counts=counts)
 
 @admin_bp.route("/students")
 def students():
-    # View all non-pending students
-    students = Account.query.filter(
-        Account.role == AccountRole.STUDENT,
-        Account.account_state != AccountState.PENDING_VERIFICATION
-    ).all()
-    return render_template("admin_students.html", students=students)
-
-@admin_bp.route("/students/pending")
-def pending_students():
-    # View only students that are PENDING_VERIFICATION
-    pending_students = Account.query.filter_by(
-        role=AccountRole.STUDENT,
-        account_state=AccountState.PENDING_VERIFICATION
-    ).all()
-    return render_template("admin_students.html", students=pending_students, is_pending=True)
+    # View all student accounts
+    students = Account.query.filter_by(role=AccountRole.STUDENT).all()
+    return render_template("admin/students.html", students=students)
 
 @admin_bp.route("/students/verify/<int:account_id>/<action>", methods=["POST"])
 def verify_student(account_id, action):
-    admin_id = session.get("account_id")
-    try:
-        verify_student_account(admin_id, account_id, action)
-        flash(f"Student account {action}ed successfully.", "success")
-    except Exception as e:
-        flash(f"Error: {str(e)}", "danger")
-    return redirect(url_for("admin.pending_students"))
+    account = Account.query.get(account_id)
+    if account:
+        if action == "approve":
+            account.account_state = AccountState.ACTIVE
+        elif action == "reject":
+            account.account_state = AccountState.REJECTED
+        db.session.commit()
+    return redirect(url_for("admin.students"))
 
-# Add placeholders for other admin routes coming from app.py
 @admin_bp.route("/companies")
 def companies():
-    return render_template("admin_companies.html", companies=[])
+    # View all company accounts
+    accounts = Account.query.filter_by(role=AccountRole.COMPANY).all()
+    company_profiles = [acc.company_profile for acc in accounts if acc.company_profile]
+    return render_template("admin/companies.html", companies=company_profiles)
+
+@admin_bp.route("/companies/verify/<int:account_id>/<action>", methods=["POST"])
+def verify_company(account_id, action):
+    account = Account.query.get(account_id)
+    if account:
+        if action == "approve":
+            account.account_state = AccountState.ACTIVE
+        elif action == "reject":
+            account.account_state = AccountState.REJECTED
+        db.session.commit()
+    return redirect(url_for("admin.companies"))
 
 @admin_bp.route("/drives")
 def drives():
-    return render_template("admin_drives.html", drives=[])
+    return render_template("admin/drives.html", drives=[])
 
 @admin_bp.route("/blacklisted")
 def blacklisted():
-    return render_template("admin_blacklisted.html", students=[])
+    return render_template("admin/blacklisted.html", students=[])
