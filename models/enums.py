@@ -12,3 +12,9 @@ class AccountState(enum.Enum):
     ACTIVE = "active"
     SUSPENDED = "suspended"
     REJECTED = "rejected"
+
+
+class DriveStatus(enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"

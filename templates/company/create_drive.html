@@ -4,70 +4,310 @@
 {% block page_title %}Post Placement Drive{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="card p-4">
-            <div class="text-center mb-5">
-                <div class="bg-primary-subtle d-inline-block p-3 rounded-4 mb-3">
-                    <i class="fas fa-bullhorn text-primary fs-3"></i>
-                </div>
-                <h4 class="fw-bold">New Placement Opportunity</h4>
-                <p class="text-muted">Fill in the details to announce a new recruitment drive to students</p>
-            </div>
-
-            <form>
-                <div class="row g-4">
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold small text-muted">Drive Title</label>
-                        <input type="text" class="form-control rounded-3 py-3 px-4"
-                            placeholder="e.g. Graduate Engineer Trainee 2024">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small text-muted">Job Role</label>
-                        <input type="text" class="form-control rounded-3 py-3 px-4"
-                            placeholder="e.g. Software Developer">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold small text-muted">Drive Date</label>
-                        <input type="date" class="form-control rounded-3 py-3 px-4">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold small text-muted">Salary Package (LPA)</label>
-                        <input type="text" class="form-control rounded-3 py-3 px-4" placeholder="e.g. 8.5 LPA">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold small text-muted">Eligibility CGPA</label>
-                        <input type="number" step="0.1" class="form-control rounded-3 py-3 px-4" placeholder="e.g. 7.5">
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold small text-muted">Application Deadline</label>
-                        <input type="date" class="form-control rounded-3 py-3 px-4">
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label fw-bold small text-muted">Job Description & Requirements</label>
-                        <textarea class="form-control rounded-4 px-4 py-3" rows="6"
-                            placeholder="Describe the role, responsibilities, and required skills..."></textarea>
-                    </div>
-
-                    <div class="col-12 mt-5">
-                        <button type="submit" class="btn btn-primary-custom w-100 py-3 rounded-4 fw-bold fs-5">Publish
-                            Application Drive</button>
-                    </div>
-                </div>
-            </form>
+<div class="container-fluid px-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">Placement Drive Console</h3>
+            <p class="text-muted small">Manage recruitment cycles and track application statuses</p>
         </div>
+        <button type="button" class="btn btn-primary-custom px-4 py-2 rounded-4 fw-bold shadow-sm"
+            data-bs-toggle="modal" data-bs-target="#createDriveModal">
+            <i class="fas fa-plus-circle me-2"></i>Post New Drive
+        </button>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center stats-card">
+                <div class="stats-icon bg-primary-subtle text-primary mb-3 mx-auto">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <span class="text-muted small fw-bold text-uppercase">Total Drives</span>
+                <h2 class="fw-bold mb-0 mt-1">{{ drives|length }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center stats-card">
+                <div class="stats-icon bg-success-subtle text-success mb-3 mx-auto">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <span class="text-muted small fw-bold text-uppercase">Approved</span>
+                <h2 class="fw-bold mb-0 mt-1">{{ drives|selectattr('approval_status', 'equalto', 'Approved')|list|length
+                    }}
+                </h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center stats-card">
+                <div class="stats-icon bg-warning-subtle text-warning mb-3 mx-auto">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <span class="text-muted small fw-bold text-uppercase">Pending</span>
+                <h2 class="fw-bold mb-0 mt-1">{{ drives|selectattr('approval_status', 'equalto', 'Pending')|list|length
+                    }}
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Drive Items -->
+    <div class="row g-4">
+        {% if drives %}
+        {% for drive in drives %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden drive-tile">
+                <div class="card-body p-0">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-auto h-100 position-absolute start-0 top-0 bottom-0 {% if drive.approval_status == 'Approved' %}bg-success{% elif drive.approval_status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}"
+                            style="width: 6px;"></div>
+
+                        <div class="col p-4 ms-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <div class="text-muted tiny-text fw-bold text-uppercase">Reference ID</div>
+                                    <div class="fw-bold text-primary font-monospace small">#{{ drive.id }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <h5 class="fw-bold mb-0 text-dark">{{ drive.job_title }}</h5>
+                                    <span class="text-muted small"><i class="fas fa-briefcase me-1"></i>{{
+                                        drive.job_location }}</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="calendar-icon me-2">
+                                            <i class="far fa-calendar-alt text-muted fs-5"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-muted tiny-text fw-bold text-uppercase">Drive Date</div>
+                                            <div class="fw-bold small">{{ drive.application_deadline.strftime('%B %d,
+                                                %Y') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3 text-end">
+                                    <span
+                                        class="status-pill {% if drive.approval_status == 'Approved' %}status-approved{% elif drive.approval_status == 'Rejected' %}status-rejected{% else %}status-pending{% endif %}">
+                                        {{ drive.approval_status }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="empty-state-icon bg-light mb-3">
+                <i class="fas fa-clipboard-list text-muted fs-2"></i>
+            </div>
+            <h5 class="fw-bold">No recruitment drives yet</h5>
+            <p class="text-muted">Broadcast your first placement opportunity to potential candidates.</p>
+            <button class="btn btn-outline-primary rounded-pill px-4 mt-2" data-bs-toggle="modal"
+                data-bs-target="#createDriveModal">Get Started</button>
+        </div>
+        {% endif %}
     </div>
 </div>
 
 <style>
-    .bg-primary-subtle {
-        background-color: #e0e7ff;
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s;
+    }
+
+    .btn-primary-custom:hover {
+        background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .stats-card {
+        transition: transform 0.3s;
+    }
+
+    .stats-card:hover {
+        transform: scale(1.02);
+    }
+
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.25rem;
+    }
+
+    .drive-tile {
+        transition: all 0.3s;
+        border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .drive-tile:hover {
+        background-color: #f8fafc;
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .status-pill {
+        padding: 0.5rem 1.25rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-approved {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-rejected {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+
+    .tiny-text {
+        font-size: 0.65rem;
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        margin: 0 auto;
+    }
+
+    .form-floating>.form-control:focus {
+        box-shadow: none;
+        border: 1px solid #4f46e5 !important;
     }
 </style>
+{% endblock %}
+
+{% block modals %}
+<div class="modal fade" id="createDriveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header border-0 bg-dark text-white p-4">
+                <div>
+                    <h4 class="modal-title fw-bold mb-0">Post New Drive</h4>
+                    <p class="text-white-50 small mb-0">Fill in the job details to notify eligible students</p>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <form method="POST" action="{{ url_for('company.create_drive') }}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="drive_id" class="form-control border-0 shadow-sm" id="driveId"
+                                    value="{{ drive_id }}" readonly>
+                                <label for="driveId">Unique Drive ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control border-0 shadow-sm" id="compId"
+                                    value="{{ company_id }}" readonly>
+                                <label for="compId">Registered Company ID</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control border-0 shadow-sm text-warning fw-bold"
+                                    id="driveStatus" value="Pending" readonly>
+                                <label for="driveStatus">Initial Status</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="job_title" class="form-control border-0 shadow-sm" id="dTitle"
+                                    placeholder="Title" required>
+                                <label for="dTitle">Placement Drive Title</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="job_location" class="form-control border-0 shadow-sm" id="jLoc"
+                                    placeholder="Location" value="Campus" required>
+                                <label for="jLoc">Job Location</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                <input type="date" name="drive_date" class="form-control border-0 shadow-sm" id="dDate"
+                                    required>
+                                <label for="dDate">Primary Drive Date</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="package_amount" class="form-control border-0 shadow-sm"
+                                    id="salary" placeholder="Salary" required>
+                                <label for="salary">CTC (LPA)</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="text" name="eligibility_criteria" class="form-control border-0 shadow-sm"
+                                    id="eligibility" placeholder="Eligibility" required>
+                                <label for="eligibility">Eligibility Criteria</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-floating mb-3">
+                                <input type="date" name="application_deadline" class="form-control border-0 shadow-sm"
+                                    id="deadline" required>
+                                <label for="deadline">Application Deadline</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <textarea name="job_description" class="form-control border-0 shadow-sm" id="desc"
+                                    style="height: 120px" placeholder="Details"></textarea>
+                                <label for="desc">Job Description & Preferences</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <button type="submit"
+                                class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold fs-5 shadow">
+                                <i class="fas fa-paper-plane me-2"></i>Finalize & Post Drive
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

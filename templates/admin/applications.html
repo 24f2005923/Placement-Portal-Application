@@ -1,48 +1,90 @@
 {% extends 'base_admin.html' %}
 
-{% block title %}Manage Applications{% endblock %}
+{% block title %}Student Applications{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <h2><i class="fas fa-file-alt me-2"></i>Applications Management</h2>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fas fa-file-alt me-2 text-primary"></i>Student Applications</h2>
+        <div class="badge bg-soft-info p-2 px-3 rounded-pill text-info border border-info-subtle">
+            Total Applications: {{ applications|length }}
+        </div>
+    </div>
 
-            <hr>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>#</th>
-                            <th>Student ID</th>
-                            <th>Drive</th>
-                            <th>Status</th>
-                            <th>Date Applied</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for app in applications %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ app.student_name }} ({{ app.student_id }})</td>
-                            <td>{{ app.drive_title }}</td>
-                            <td><span class="badge bg-warning text-dark">{{ app.status }}</span></td>
-                            <td>{{ app.date_applied }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-success"><i class="fas fa-check"></i></button>
-                                <button class="btn btn-sm btn-danger"><i class="fas fa-times"></i></button>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="6" class="text-center">No applications found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light border-bottom">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Student Name</th>
+                        <th>Roll Number</th>
+                        <th>Placement Drive</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr class="border-bottom-0">
+                        <td class="ps-4 fw-bold text-muted small">{{ loop.index }}</td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ app.student.full_name }}</div>
+                            <small class="text-muted">{{ app.student.institutional_email }}</small>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">{{ app.student.university_register_number
+                                }}</span></td>
+                        <td>
+                            <div class="fw-bold">{{ app.drive.job_title }}</div>
+                            <small class="text-primary">{{ app.drive.company.name if app.drive.company else "Unknown
+                                Company" }}</small>
+                        </td>
+                        <td>
+                            <div class="small">{{ app.applied_at.strftime('%d %b, %Y') }}</div>
+                        </td>
+                        <td>
+                            {% if app.status == 'Pending' %}
+                            <span class="badge rounded-pill bg-warning text-dark px-3">Pending</span>
+                            {% elif app.status == 'Shortlisted' %}
+                            <span class="badge rounded-pill bg-info px-3">Shortlisted</span>
+                            {% elif app.status == 'Selected' %}
+                            <span class="badge rounded-pill bg-success px-3">Selected</span>
+                            {% else %}
+                            <span class="badge rounded-pill bg-danger px-3">Rejected</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted mb-2"><i class="fas fa-inbox fs-1 opacity-25"></i></div>
+                            <h5 class="fw-bold">No applications submitted yet</h5>
+                            <p class="text-muted small">When students apply for drives, they will appear here.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-soft-info {
+        background-color: #e0f2fe;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8fafc;
+        transition: all 0.2s;
+    }
+
+    .badge {
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
 {% endblock %}
+flagship

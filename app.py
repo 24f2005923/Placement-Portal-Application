@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import os
-from database import init_db, get_db_connection
-from models import Student, Company, Drive, Application, get_counts
+from database import db, get_db_connection
+from models import StudentProfile, CompanyProfile, PlacementDrive
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "placement_secret_key"
@@ -122,20 +123,7 @@ def student_profile():
         return render_template("student_profile.html", student=student)
     return redirect(url_for("student_login"))
 
-@app.route("/student/drives")
-def student_view_drives():
-    if session.get("role") == "student":
-        conn = get_db_connection()
-        drives = conn.execute("""
-            SELECT drives.*, companies.name as company_name 
-            FROM drives 
-            JOIN companies ON drives.company_id = companies.id 
-            WHERE drives.status = 'Open'
-        """).fetchall()
-        conn.close()
-        return render_template("student_view_drives.html", drives=drives)
-    return redirect(url_for("student_login"))
-
+# Note: Student placement view is handled in routes/student.py
 @app.route("/student/search")
 def student_search_jobs():
     if session.get("role") == "student":
@@ -255,10 +243,7 @@ def company_dashboard():
 def company_profile():
     return render_template("company_profile.html")
 
-@app.route("/company/create-drive")
-def company_create_drive():
-    return render_template("company_create_drive.html")
-
+# Note: Company drive creation is handled in routes/company.py
 @app.route("/company/applications")
 def company_applications():
     if session.get("role") == "company":
@@ -337,14 +322,7 @@ def admin_companies():
     else:
         return redirect(url_for("admin_login"))
 
-@app.route("/admin/drives")
-def admin_drives():
-    if "role" in session and session["role"] == "admin":
-        drives = Drive.get_all()
-        return render_template("admin_drives.html", drives=drives)
-    else:
-        return redirect(url_for("admin_login"))
-
+# Note: Admin drive management is handled in routes/admin.py
 @app.route("/admin/applications")
 def admin_applications():
     if "role" in session and session["role"] == "admin":

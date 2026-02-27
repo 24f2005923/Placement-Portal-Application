@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, session, reques
 from datetime import datetime
 from database import db
 from utils.decorators import active_account_required
-from models import StudentProfile
+from models import StudentProfile, PlacementDrive
 
 student_bp = Blueprint("student", __name__, url_prefix="/student")
 
@@ -60,7 +60,15 @@ def placements():
     account_id = session.get("account_id")
     profile = StudentProfile.query.filter_by(account_id=account_id).first()
     student_name = profile.full_name if profile else "Student User"
-    return render_template("student/view_drives.html", drives=[], student_name=student_name)
+    
+    current_time = datetime.now()
+    # Filter: Approved + Deadline hasn't passed
+    drives = PlacementDrive.query.filter(
+        PlacementDrive.approval_status == 'Approved',
+        PlacementDrive.application_deadline >= current_time
+    ).order_by(PlacementDrive.application_deadline.asc()).all()
+    
+    return render_template("student/view_drives.html", drives=drives, student_name=student_name)
 
 @student_bp.route("/applications")
 @active_account_required
