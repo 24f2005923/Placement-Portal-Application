@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request, flash
 from utils.decorators import active_account_required
-from models import CompanyProfile, PlacementDrive, db
+from models import CompanyProfile, PlacementDrive, StudentApplication, db
 from datetime import datetime
 import random
 import string
@@ -90,7 +90,16 @@ def applications():
     account_id = session.get("account_id")
     profile = CompanyProfile.query.filter_by(account_id=account_id).first()
     company_name = profile.name if profile else "Company User"
-    return render_template("company/applications.html", applications=[], company_name=company_name)
+    
+    apps = []
+    if profile:
+        # Get all drives for this company
+        drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
+        if drive_ids:
+            # Get all applications for those drives
+            apps = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids)).all()
+            
+    return render_template("company/applications.html", applications=apps, company_name=company_name)
 
 @company_bp.route("/profile")
 @active_account_required

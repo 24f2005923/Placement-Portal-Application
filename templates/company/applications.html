@@ -36,22 +36,22 @@
                     <td class="ps-4">
                         <div class="d-flex align-items-center gap-2">
                             <div class="rounded-circle bg-primary-subtle p-2 text-primary fw-bold small">
-                                {{ app.student_name[:2]|upper }}
+                                {{ app.student.full_name[:2]|upper }}
                             </div>
-                            <span class="fw-600">{{ app.student_name }}</span>
+                            <span class="fw-600">{{ app.student.full_name }}</span>
                         </div>
                     </td>
-                    <td>{{ app.roll_number }}</td>
-                    <td>{{ app.drive_title }}</td>
+                    <td>{{ app.student.university_register_number }}</td>
+                    <td>{{ app.drive.job_title }}</td>
                     <td>--</td>
                     <td>
                         <span
-                            class="badge {% if app.status == 'Pending' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
+                            class="badge {% if app.status == 'Applied' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
                             {{ app.status }}
                         </span>
                     </td>
                     <td class="pe-4">
-                        {% if app.status == 'Pending' %}
+                        {% if app.status == 'Applied' %}
                         <button class="btn btn-sm btn-success rounded-pill px-3">Shortlist</button>
                         <button class="btn btn-sm btn-danger rounded-pill px-3">Reject</button>
                         {% else %}

@@ -43,8 +43,8 @@
                             <div class="small">{{ app.applied_at.strftime('%d %b, %Y') }}</div>
                         </td>
                         <td>
-                            {% if app.status == 'Pending' %}
-                            <span class="badge rounded-pill bg-warning text-dark px-3">Pending</span>
+                            {% if app.status == 'Applied' %}
+                            <span class="badge rounded-pill bg-warning text-dark px-3">Applied</span>
                             {% elif app.status == 'Shortlisted' %}
                             <span class="badge rounded-pill bg-info px-3">Shortlisted</span>
                             {% elif app.status == 'Selected' %}

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
-from models import Account, AccountRole, AccountState, PlacementDrive, Application, db
+from models import Account, AccountRole, AccountState, PlacementDrive, StudentApplication, db
 from datetime import datetime
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -85,7 +85,7 @@ def reject_drive(drive_id):
 @admin_bp.route("/applications")
 def applications():
     # Fetch all applications with joined student and drive info
-    all_apps = Application.query.order_by(Application.applied_at.desc()).all()
+    all_apps = StudentApplication.query.order_by(StudentApplication.applied_at.desc()).all()
     return render_template("admin/applications.html", applications=all_apps)
 @admin_bp.route("/blacklisted")
 def blacklisted():

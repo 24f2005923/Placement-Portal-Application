@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, session, reques
 from datetime import datetime
 from database import db
 from utils.decorators import active_account_required
-from models import StudentProfile, PlacementDrive
+from models import StudentProfile, PlacementDrive, StudentApplication
 
 student_bp = Blueprint("student", __name__, url_prefix="/student")
 
@@ -76,7 +76,12 @@ def applications():
     account_id = session.get("account_id")
     profile = StudentProfile.query.filter_by(account_id=account_id).first()
     student_name = profile.full_name if profile else "Student User"
-    return render_template("student/applications.html", applications=[], student_name=student_name)
+    
+    apps = []
+    if profile:
+        apps = StudentApplication.query.filter_by(student_id=profile.id).all()
+        
+    return render_template("student/applications.html", applications=apps, student_name=student_name)
 
 @student_bp.route("/history")
 @active_account_required

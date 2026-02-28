@@ -1,5 +1,5 @@
 from app_factory import create_app
-from models import db, Application
+from models import db, StudentApplication
 
 def sync_applications_schema():
     """
@@ -8,18 +8,18 @@ def sync_applications_schema():
     """
     app = create_app()
     with app.app_context():
-        print("Starting focused schema sync for 'applications' table...")
+        print("Starting focused schema sync for 'student_applications' table...")
         
         try:
             # Drop only the applications table if it exists
-            Application.__table__.drop(db.engine, checkfirst=True)
-            print("Dropped old 'applications' table.")
+            StudentApplication.__table__.drop(db.engine, checkfirst=True)
+            print("Dropped old 'student_applications' table.")
             
             # Recreate only the applications table with new schema
-            Application.__table__.create(db.engine)
-            print("Created new 'applications' table with updated schema (including applied_at).")
+            StudentApplication.__table__.create(db.engine)
+            print("Created new 'student_applications' table with updated schema (including applied_at).")
             
-            print("Applications table sync completed successfully!")
+            print("StudentApplications table sync completed successfully!")
             
         except Exception as e:
             print(f"Error during schema sync: {e}")

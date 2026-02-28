@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import sqlite3
 import os
 from database import db, get_db_connection
-from models import StudentProfile, CompanyProfile, PlacementDrive
+from models import StudentProfile, CompanyProfile, PlacementDrive, StudentApplication
 from datetime import datetime
 
 app = Flask(__name__)
@@ -323,10 +323,11 @@ def admin_companies():
         return redirect(url_for("admin_login"))
 
 # Note: Admin drive management is handled in routes/admin.py
+
 @app.route("/admin/applications")
 def admin_applications():
     if "role" in session and session["role"] == "admin":
-        applications = Application.get_all()
+        applications = StudentApplication.query.all()
         return render_template("admin_applications.html", applications=applications)
     else:
         return redirect(url_for("admin_login"))

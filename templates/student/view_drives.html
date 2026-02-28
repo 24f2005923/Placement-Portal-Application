@@ -38,7 +38,8 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="small"><i class="fas fa-calendar-alt me-2 text-muted"></i> Deadline: {{
                     drive.application_deadline.strftime('%d %b, %Y') }}</div>
-                <button class="btn btn-sm btn-primary-custom rounded-pill">Apply Now</button>
+                <button class="btn btn-sm btn-primary-custom rounded-pill apply-btn"
+                    data-drive-id="{{ drive.id }}">Apply Now</button>
             </div>
         </div>
     </div>
@@ -51,6 +52,43 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+    document.querySelectorAll('.apply-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const driveId = this.getAttribute('data-drive-id');
+            const btn = this;
+
+            btn.disabled = true;
+            btn.innerText = 'Applying...';
+
+            fetch(`/api/apply/${driveId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json().then(data => ({ status: response.status, body: data })))
+                .then(res => {
+                    if (res.status === 201) {
+                        alert(res.body.message);
+                        btn.innerText = 'Applied';
+                        btn.classList.replace('btn-primary-custom', 'btn-success');
+                    } else {
+                        alert(res.body.message || 'An error occurred');
+                        btn.disabled = false;
+                        btn.innerText = 'Apply Now';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Something went wrong. Please try again.');
+                    btn.disabled = false;
+                    btn.innerText = 'Apply Now';
+                });
+        });
+    });
+</script>
 
 <style>
     .bg-primary-subtle {

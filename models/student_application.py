@@ -10,7 +10,7 @@ class StudentApplication(db.Model):
     drive_id = db.Column(db.Integer, db.ForeignKey("placement_drives.id"), nullable=False)
     
     # Default status set as "Applied" as per requirements
-    application_status = db.Column(db.String(50), default="Applied")
+    status = db.Column(db.String(50), default="Applied")
     applied_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, nullable=True) # For future stage updates
     
