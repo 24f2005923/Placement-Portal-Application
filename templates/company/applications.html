@@ -44,19 +44,21 @@
                     <td>{{ app.student.university_register_number }}</td>
                     <td>{{ app.drive.job_title }}</td>
                     <td>--</td>
-                    <td>
+                    <td id="status-{{ app.id }}">
                         <span
-                            class="badge {% if app.status == 'Applied' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
+                            class="badge {% if app.status == 'Applied' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% elif app.status == 'Shortlisted' %}bg-info-subtle text-info{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
                             {{ app.status }}
                         </span>
                     </td>
                     <td class="pe-4">
-                        {% if app.status == 'Applied' %}
-                        <button class="btn btn-sm btn-success rounded-pill px-3">Shortlist</button>
-                        <button class="btn btn-sm btn-danger rounded-pill px-3">Reject</button>
-                        {% else %}
-                        <span class="text-muted small">Processed</span>
-                        {% endif %}
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-info px-3 update-status" data-id="{{ app.id }}"
+                                data-status="Shortlisted">Shortlist</button>
+                            <button class="btn btn-outline-success px-3 update-status" data-id="{{ app.id }}"
+                                data-status="Selected">Select</button>
+                            <button class="btn btn-outline-danger px-3 update-status" data-id="{{ app.id }}"
+                                data-status="Rejected">Reject</button>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -87,4 +89,38 @@
         background-color: #e0f2fe;
     }
 </style>
+
+<script>
+    document.querySelectorAll('.update-status').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const appId = this.getAttribute('data-id');
+            const status = this.getAttribute('data-status');
+
+            if (!confirm(`Update this application to ${status}?`)) return;
+
+            fetch(`/api/applications/${appId}/update-status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: status })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.message.includes('notified')) {
+                        const statusCell = document.getElementById(`status-${appId}`);
+                        let badgeClass = 'bg-info-subtle text-info';
+                        if (status === 'Selected') badgeClass = 'bg-success-subtle text-success';
+                        if (status === 'Rejected') badgeClass = 'bg-danger-subtle text-danger';
+                        if (status === 'Applied') badgeClass = 'bg-warning-subtle text-warning';
+
+                        statusCell.innerHTML = `
+                        <span class="badge ${badgeClass} border px-3 py-2 rounded-pill">
+                            ${status}
+                        </span>`;
+                    }
+                })
+                .catch(err => alert('Failed to update status'));
+        });
+    });
+</script>
 {% endblock %}

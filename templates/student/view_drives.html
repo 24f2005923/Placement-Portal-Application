@@ -38,8 +38,13 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div class="small"><i class="fas fa-calendar-alt me-2 text-muted"></i> Deadline: {{
                     drive.application_deadline.strftime('%d %b, %Y') }}</div>
+                {% if drive.id in applied_drive_ids %}
+                <button class="btn btn-sm btn-success rounded-pill" disabled>Applied</button>
+                {% else %}
                 <button class="btn btn-sm btn-primary-custom rounded-pill apply-btn"
-                    data-drive-id="{{ drive.id }}">Apply Now</button>
+                    data-drive-id="{{ drive.id }}">Apply
+                    Now</button>
+                {% endif %}
             </div>
         </div>
     </div>

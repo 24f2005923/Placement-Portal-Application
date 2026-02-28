@@ -16,26 +16,21 @@
                     <th class="ps-4 text-muted small fw-bold">COMPANY</th>
                     <th class="text-muted small fw-bold">ROLE</th>
                     <th class="text-muted small fw-bold">DATE APPLIED</th>
-                    <th class="text-muted small fw-bold">STATUS</th>
-                    <th class="pe-4 text-muted small fw-bold text-end">DETAILS</th>
+                    <th class="pe-4 text-muted small fw-bold text-end">STATUS</th>
                 </tr>
             </thead>
             <tbody>
                 {% if applications %}
                 {% for app in applications %}
                 <tr>
-                    <td class="ps-4 fw-bold">{{ app.company_name }}</td>
-                    <td>{{ app.drive_title }}</td>
-                    <td>{{ app.date_applied }}</td>
-                    <td>
+                    <td class="ps-4 fw-bold">{{ app.drive.company.name }}</td>
+                    <td>{{ app.drive.job_title }}</td>
+                    <td>{{ app.applied_at.strftime('%d %b, %Y') }}</td>
+                    <td class="pe-4 text-end">
                         <span
-                            class="badge {% if app.status == 'Pending' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
+                            class="badge {% if app.status == 'Applied' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% elif app.status == 'Shortlisted' %}bg-info-subtle text-info{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
                             {{ app.status }}
                         </span>
-                    </td>
-                    <td class="pe-4 text-end">
-                        <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
-                                class="fas fa-chevron-right"></i></button>
                     </td>
                 </tr>
                 {% endfor %}

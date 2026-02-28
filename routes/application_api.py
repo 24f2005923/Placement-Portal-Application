@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, session
-from models import StudentProfile, PlacementDrive, StudentApplication, CompanyProfile, db
+from models import StudentProfile, PlacementDrive, StudentApplication, CompanyProfile, Notification, db
 from datetime import datetime
 
 application_api_bp = Blueprint("application_api", __name__)
@@ -95,3 +95,87 @@ def get_company_applications():
         })
 
     return jsonify(results), 200
+
+@application_api_bp.route("/api/applications/<int:app_id>/update-status", methods=["POST"])
+def update_application_status(app_id):
+    # Allow Admin or Company to update status
+    role = session.get("role")
+    if role not in ["admin", "company"]:
+        return jsonify({"message": "Unauthorized"}), 401
+
+    from flask import request
+    data = request.get_json()
+    new_status = data.get("status") # e.g., "Shortlisted", "Selected", "Rejected"
+
+    if not new_status:
+        return jsonify({"message": "Status is required"}), 400
+
+    app = StudentApplication.query.get(app_id)
+    if not app:
+        return jsonify({"message": "Application not found"}), 404
+
+    # If company, verify they own the drive
+    if role == "company":
+        account_id = session.get("account_id")
+        company = CompanyProfile.query.filter_by(account_id=account_id).first()
+        if not company or app.drive.company_id != company.id:
+            return jsonify({"message": "Unauthorized"}), 401
+
+    old_status = app.status
+    app.status = new_status
+    app.updated_at = datetime.now()
+
+    # Create Notification for Student
+    try:
+        msg = f"Your application for {app.drive.job_title} at {app.drive.company.name} has been updated to '{new_status}'."
+        category = "Success" if new_status == "Selected" else ("Warning" if new_status == "Rejected" else "Info")
+        
+        notification = Notification(
+            student_id=app.student_id,
+            message=msg,
+            category=category
+        )
+        db.session.add(notification)
+        db.session.commit()
+        return jsonify({"message": "Status updated and student notified"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": f"Error: {str(e)}"}), 500
+
+@application_api_bp.route("/api/notifications", methods=["GET"])
+def get_student_notifications():
+    if session.get("role") != "student":
+        return jsonify({"message": "Unauthorized"}), 401
+    
+    account_id = session.get("account_id")
+    student = StudentProfile.query.filter_by(account_id=account_id).first()
+    
+    if not student:
+        return jsonify({"message": "Student not found"}), 404
+        
+    notifications = Notification.query.filter_by(student_id=student.id).order_by(Notification.created_at.desc()).all()
+    results = []
+    for n in notifications:
+        results.append({
+            "id": n.id,
+            "message": n.message,
+            "category": n.category,
+            "is_read": n.is_read,
+            "created_at": n.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    
+    return jsonify(results), 200
+
+@application_api_bp.route("/api/notifications/mark-read", methods=["POST"])
+def mark_notifications_read():
+    if session.get("role") != "student":
+        return jsonify({"message": "Unauthorized"}), 401
+    
+    account_id = session.get("account_id")
+    student = StudentProfile.query.filter_by(account_id=account_id).first()
+    
+    if student:
+        Notification.query.filter_by(student_id=student.id, is_read=False).update({"is_read": True})
+        db.session.commit()
+        
+    return jsonify({"message": "Marked all as read"}), 200

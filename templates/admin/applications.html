@@ -22,6 +22,7 @@
                         <th>Placement Drive</th>
                         <th>Applied On</th>
                         <th>Status</th>
+                        <th class="pe-4 text-end">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,7 +43,7 @@
                         <td>
                             <div class="small">{{ app.applied_at.strftime('%d %b, %Y') }}</div>
                         </td>
-                        <td>
+                        <td id="status-{{ app.id }}">
                             {% if app.status == 'Applied' %}
                             <span class="badge rounded-pill bg-warning text-dark px-3">Applied</span>
                             {% elif app.status == 'Shortlisted' %}
@@ -52,6 +53,16 @@
                             {% else %}
                             <span class="badge rounded-pill bg-danger px-3">Rejected</span>
                             {% endif %}
+                        </td>
+                        <td class="pe-4 text-end">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-info px-3 update-status" data-id="{{ app.id }}"
+                                    data-status="Shortlisted">Shortlist</button>
+                                <button class="btn btn-outline-success px-3 update-status" data-id="{{ app.id }}"
+                                    data-status="Selected">Select</button>
+                                <button class="btn btn-outline-danger px-3 update-status" data-id="{{ app.id }}"
+                                    data-status="Rejected">Reject</button>
+                            </div>
                         </td>
                     </tr>
                     {% else %}
@@ -86,5 +97,41 @@
         letter-spacing: 0.5px;
     }
 </style>
+
+<script>
+    document.querySelectorAll('.update-status').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const appId = this.getAttribute('data-id');
+            const status = this.getAttribute('data-status');
+            const row = this.closest('tr');
+
+            if (!confirm(`Are you sure you want to mark this application as ${status}?`)) return;
+
+            fetch(`/api/applications/${appId}/update-status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: status })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.message.includes('notified')) {
+                        // Update the status badge in the UI
+                        const statusCell = document.getElementById(`status-${appId}`);
+                        let badgeClass = 'bg-info';
+                        if (status === 'Selected') badgeClass = 'bg-success';
+                        if (status === 'Rejected') badgeClass = 'bg-danger';
+                        if (status === 'Applied') badgeClass = 'bg-warning text-dark';
+
+                        statusCell.innerHTML = `<span class="badge rounded-pill ${badgeClass} px-3">${status}</span>`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Connection error');
+                });
+        });
+    });
+</script>
 {% endblock %}
 flagship

@@ -11,18 +11,79 @@
             <button class="btn btn-sm btn-light rounded-pill">Mark all as read</button>
         </div>
 
-        <div class="card p-5 text-center shadow-sm">
-            <div class="mb-3">
-                <i class="fas fa-bell-slash text-muted fs-1"></i>
+        <div id="notifications-container">
+            <div class="card p-5 text-center shadow-sm" id="empty-state">
+                <div class="mb-3">
+                    <i class="fas fa-bell-slash text-muted fs-1"></i>
+                </div>
+                <h5 class="text-muted">No New Notifications</h5>
+                <p class="text-muted small">We'll notify you here about updates to your applications and upcoming
+                    drives.</p>
             </div>
-            <h5 class="text-muted">No New Notifications</h5>
-            <p class="text-muted small">We'll notify you here about updates to your applications and upcoming drives.
-            </p>
+            <div id="notifications-list" class="d-flex flex-column gap-3"></div>
         </div>
     </div>
 </div>
 
+<script>
+    function fetchNotifications() {
+        const list = document.getElementById('notifications-list');
+        const empty = document.getElementById('empty-state');
+
+        fetch('/api/notifications')
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) {
+                    empty.classList.add('d-none');
+                    list.innerHTML = data.map(n => `
+                        <div class="card border-0 shadow-sm p-4 ${n.is_read ? 'opacity-75' : 'border-start border-4 ' + (n.category === 'Success' ? 'border-success' : (n.category === 'Warning' ? 'border-danger' : 'border-info'))}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="d-flex gap-3">
+                                    <div class="bg-${n.category === 'Success' ? 'success' : (n.category === 'Warning' ? 'danger' : 'primary')}-subtle p-3 rounded-pill">
+                                        <i class="fas ${n.category === 'Success' ? 'fa-check' : (n.category === 'Warning' ? 'fa-times' : 'fa-info')} text-${n.category === 'Success' ? 'success' : (n.category === 'Warning' ? 'danger' : 'primary')}"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-1 fw-600">${n.message}</p>
+                                        <small class="text-muted"><i class="far fa-clock me-1"></i>${n.created_at}</small>
+                                    </div>
+                                </div>
+                                ${!n.is_read ? '<span class="badge bg-primary rounded-pill">New</span>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    empty.classList.remove('d-none');
+                    list.innerHTML = '';
+                }
+            })
+            .catch(err => console.error('Error fetching notifications:', err));
+    }
+
+    document.querySelector('.btn-light').addEventListener('click', function () {
+        fetch('/api/notifications/mark-read', { method: 'POST' })
+            .then(() => fetchNotifications())
+            .catch(err => alert('Failed to mark as read'));
+    });
+
+    // Initial fetch
+    fetchNotifications();
+    // Refresh every 30 seconds
+    setInterval(fetchNotifications, 30000);
+</script>
+
 <style>
+    .fw-600 {
+        font-weight: 600;
+    }
+
+    .bg-danger-subtle {
+        background-color: #fef2f2;
+    }
+
+    .text-danger {
+        color: #dc2626;
+    }
+
     .bg-primary-subtle {
         background-color: #eef2ff;
     }

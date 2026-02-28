@@ -68,7 +68,11 @@ def placements():
         PlacementDrive.application_deadline >= current_time
     ).order_by(PlacementDrive.application_deadline.asc()).all()
     
-    return render_template("student/view_drives.html", drives=drives, student_name=student_name)
+    applied_drive_ids = []
+    if profile:
+        applied_drive_ids = [app.drive_id for app in StudentApplication.query.filter_by(student_id=profile.id).all()]
+    
+    return render_template("student/view_drives.html", drives=drives, student_name=student_name, applied_drive_ids=applied_drive_ids)
 
 @student_bp.route("/applications")
 @active_account_required
