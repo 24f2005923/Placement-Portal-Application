@@ -32,9 +32,9 @@
         <div class="card p-4">
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <i class="fas fa-bell text-warning fs-3"></i>
-                <span class="badge bg-warning-subtle text-warning rounded-pill">Updates</span>
+                <span class="badge bg-warning-subtle text-warning rounded-pill">{{ unread_count }} Unread</span>
             </div>
-            <h3 class="fw-bold mb-1">0</h3>
+            <h3 class="fw-bold mb-1">{{ unread_count }}</h3>
             <p class="text-muted mb-0">Recent Notifications</p>
         </div>
     </div>
@@ -45,7 +45,11 @@
         <!-- Recent Drives -->
         <div class="card mb-4">
             <div class="card-header bg-transparent border-0 p-4">
-                <h5 class="fw-bold mb-0">Latest Placement Drives</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Latest Placement Drives</h5>
+                    <a href="{{ url_for('student.placements') }}"
+                        class="small text-decoration-none fw-bold text-primary">View All</a>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -54,7 +58,7 @@
                             <tr>
                                 <th class="ps-4">Company</th>
                                 <th>Role</th>
-                                <th>Date</th>
+                                <th>Posted On</th>
                                 <th class="pe-4 text-end">Action</th>
                             </tr>
                         </thead>
@@ -63,19 +67,29 @@
                             {% for drive in latest_drives %}
                             <tr>
                                 <td class="ps-4">
-                                    <div class="fw-bold">{{ drive.company_name }}</div>
+                                    <div class="fw-bold text-dark">{{ drive.company.name }}</div>
                                 </td>
-                                <td>{{ drive.title }}</td>
-                                <td>{{ drive.date }}</td>
+                                <td><span class="badge bg-light text-primary border">{{ drive.job_title }}</span></td>
+                                <td>{{ drive.created_at.strftime('%d %b, %Y') }}</td>
                                 <td class="pe-4 text-end">
+                                    {% if drive.id in applied_drive_ids %}
+                                    <button class="btn btn-sm btn-success-subtle text-success rounded-pill px-3"
+                                        disabled>
+                                        <i class="fas fa-check-circle me-1"></i> Applied
+                                    </button>
+                                    {% else %}
                                     <a href="{{ url_for('student.placements') }}"
-                                        class="btn btn-sm btn-outline-primary rounded-pill">View Details</a>
+                                        class="btn btn-sm btn-primary-custom rounded-pill px-3">Apply Now</a>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
                             {% else %}
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">No active drives available.</td>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="fas fa-search d-block mb-2 opacity-25 fs-1"></i>
+                                    No active drives available.
+                                </td>
                             </tr>
                             {% endif %}
                         </tbody>
@@ -85,29 +99,39 @@
         </div>
     </div>
 
-    <!-- Application Status -->
+    <!-- Recent Notifications -->
     <div class="col-lg-4">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-header bg-transparent border-0 p-4">
-                <h5 class="fw-bold mb-0">Application Tracker</h5>
+                <h5 class="fw-bold mb-0">Recent Alerts</h5>
             </div>
             <div class="card-body p-4 pt-0">
-                {% if recent_apps %}
-                {% for app in recent_apps %}
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="small fw-bold">{{ app.company_name }} ({{ app.drive_title }})</span>
-                        <span class="badge bg-info-subtle text-info rounded-pill">{{ app.status }}</span>
+                {% if recent_notifications %}
+                {% for note in recent_notifications %}
+                <div class="d-flex gap-3 mb-3 border-bottom pb-3">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle {% if note.category == 'Success' %}bg-success-subtle text-success{% elif note.category == 'Warning' %}bg-danger-subtle text-danger{% else %}bg-info-subtle text-info{% endif %} p-2 d-flex align-items-center justify-content-center"
+                            style="width: 35px; height: 35px;">
+                            <i
+                                class="fas {% if note.category == 'Success' %}fa-check{% elif note.category == 'Warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} small"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="mb-0 small fw-bold text-dark text-truncate">{{ note.message }}</p>
+                        <p class="mb-0 text-muted extra-small">{{ note.created_at.strftime('%d %b, %I:%M %p') }}</p>
                     </div>
                 </div>
                 {% endfor %}
                 {% else %}
-                <p class="text-center text-muted small py-3">No recent applications.</p>
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-bell-slash d-block mb-2 opacity-25 fs-1"></i>
+                    <p class="small mb-0">No recent alerts.</p>
+                </div>
                 {% endif %}
-                <hr>
-                <div class="text-center">
-                    <a href="{{ url_for('student.applications') }}" class="text-decoration-none small fw-bold">View all
-                        applications</a>
+
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('student.notifications') }}"
+                        class="btn btn-sm btn-light border rounded-pill px-4">See All Notifications</a>
                 </div>
             </div>
         </div>
@@ -115,6 +139,10 @@
 </div>
 
 <style>
+    .extra-small {
+        font-size: 0.7rem;
+    }
+
     .bg-primary-subtle {
         background-color: #e0e7ff;
     }

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, session, reques
 from datetime import datetime
 from database import db
 from utils.decorators import active_account_required
-from models import StudentProfile, PlacementDrive, StudentApplication
+from models import StudentProfile, PlacementDrive, StudentApplication, Notification
 
 student_bp = Blueprint("student", __name__, url_prefix="/student")
 
@@ -17,7 +17,45 @@ def dashboard():
     account_id = session.get("account_id")
     profile = StudentProfile.query.filter_by(account_id=account_id).first()
     student_name = profile.full_name if profile else "Student User"
-    return render_template("student/dashboard.html", student_name=student_name)
+    
+    latest_drives = []
+    app_count = 0
+    unread_notifications_count = 0
+    recent_notifications = []
+    
+    if profile:
+        current_time = datetime.now()
+        # Latest 5 approved drives
+        latest_drives = PlacementDrive.query.filter(
+            PlacementDrive.approval_status == 'Approved',
+            PlacementDrive.application_deadline >= current_time
+        ).order_by(PlacementDrive.created_at.desc()).limit(5).all()
+        
+        # Application count
+        app_count = StudentApplication.query.filter_by(student_id=profile.id).count()
+        
+        # Notifications
+        unread_notifications_count = Notification.query.filter_by(
+            student_id=profile.id, 
+            is_read=False
+        ).count()
+        
+        recent_notifications = Notification.query.filter_by(
+            student_id=profile.id
+        ).order_by(Notification.created_at.desc()).limit(5).all()
+        
+        # Applied drive IDs for button state
+        applied_drive_ids = [app.drive_id for app in StudentApplication.query.filter_by(student_id=profile.id).all()]
+        
+    return render_template(
+        "student/dashboard.html", 
+        student_name=student_name,
+        latest_drives=latest_drives,
+        app_count=app_count,
+        unread_count=unread_notifications_count,
+        recent_notifications=recent_notifications,
+        applied_drive_ids=applied_drive_ids
+    )
 
 @student_bp.route("/profile", methods=["GET", "POST"])
 @active_account_required
@@ -93,7 +131,15 @@ def history():
     account_id = session.get("account_id")
     profile = StudentProfile.query.filter_by(account_id=account_id).first()
     student_name = profile.full_name if profile else "Student User"
-    return render_template("student/history.html", student_name=student_name)
+    
+    selected_apps = []
+    if profile:
+        selected_apps = StudentApplication.query.filter_by(
+            student_id=profile.id, 
+            status='Selected'
+        ).all()
+        
+    return render_template("student/history.html", student_name=student_name, applications=selected_apps)
 
 @student_bp.route("/notifications")
 @active_account_required

@@ -22,8 +22,20 @@ def company_required():
 def dashboard():
     account_id = session.get("account_id")
     profile = CompanyProfile.query.filter_by(account_id=account_id).first()
-    company_name = profile.name if profile else "Company User"
-    return render_template("company/dashboard.html", company_name=company_name)
+    if not profile: return redirect(url_for("auth.company_login"))
+
+    drives = PlacementDrive.query.filter_by(company_id=profile.id).all()
+    drive_ids = [d.id for d in drives]
+    
+    active_count = PlacementDrive.query.filter_by(company_id=profile.id, approval_status='Approved').count()
+    total_apps = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids)).count() if drive_ids else 0
+    pending = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == 'Applied').count() if drive_ids else 0
+    hired = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == 'Selected').count() if drive_ids else 0
+    recent = PlacementDrive.query.filter_by(company_id=profile.id).order_by(PlacementDrive.created_at.desc()).limit(5).all()
+
+    return render_template("company/dashboard.html", company_name=profile.name, 
+                           active_drives=active_count, total_apps=total_apps, 
+                           pending_review=pending, hired=hired, recent_drives=recent)
 
 @company_bp.route("/create-drive", methods=["GET", "POST"])
 @active_account_required

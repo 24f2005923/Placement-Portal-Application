@@ -205,15 +205,34 @@
     <main id="main-content">
         <div class="top-navbar">
             <h4 class="fw-bold mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
-            <div class="d-flex align-items-center gap-3">
-                <div class="text-end d-none d-md-block">
-                    <p class="mb-0 fw-bold">{{ student_name if student_name else 'Student User' }}</p>
-                    <p class="mb-0 text-muted small">Student Account</p>
+            <div class="dropdown">
+                <div class="d-flex align-items-center gap-3" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false" style="cursor: pointer;">
+                    <div class="text-end d-none d-md-block">
+                        <p class="mb-0 fw-bold">{{ student_name if student_name else 'Student User' }}</p>
+                        <p class="mb-0 text-muted small">Student Account</p>
+                    </div>
+                    <div
+                        style="width: 40px; height: 40px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user text-secondary"></i>
+                    </div>
                 </div>
-                <div
-                    style="width: 40px; height: 40px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-user text-secondary"></i>
-                </div>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3 py-2"
+                    style="border-radius: 12px; width: 200px;">
+                    <li class="px-3 py-2 border-bottom mb-2">
+                        <span class="small text-muted d-block">Signed in as</span>
+                        <span class="fw-bold">{{ student_name if student_name else 'Student' }}</span>
+                    </li>
+                    <li><a class="dropdown-item py-2" href="{{ url_for('student.profile') }}"><i
+                                class="fas fa-user-circle me-2 text-primary"></i> My Profile</a></li>
+                    <li><a class="dropdown-item py-2" href="{{ url_for('student.settings') }}"><i
+                                class="fas fa-cog me-2 text-warning"></i> Settings</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item py-2 text-danger" href="{{ url_for('auth.logout') }}"><i
+                                class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                </ul>
             </div>
         </div>
 

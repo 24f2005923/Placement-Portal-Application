@@ -11,11 +11,11 @@ def admin_required():
 
 @admin_bp.route("/dashboard")
 def dashboard():
-    # Placeholder for dashboard counts
     counts = {
         "students": Account.query.filter_by(role=AccountRole.STUDENT).count(),
-        # "companies": Account.query.filter_by(role=AccountRole.COMPANY).count(),
-        # "drives": Drive.query.count()
+        "companies": Account.query.filter_by(role=AccountRole.COMPANY).count(),
+        "drives": PlacementDrive.query.count(),
+        "applications": StudentApplication.query.count(),
     }
     return render_template("admin/dashboard.html", counts=counts)
 
@@ -89,4 +89,25 @@ def applications():
     return render_template("admin/applications.html", applications=all_apps)
 @admin_bp.route("/blacklisted")
 def blacklisted():
-    return render_template("admin/blacklisted.html", students=[])
+    from models import CompanyProfile, StudentProfile
+    # Rejected student accounts
+    rejected_students = Account.query.filter_by(
+        role=AccountRole.STUDENT, account_state=AccountState.REJECTED
+    ).all()
+    # Rejected company accounts
+    rejected_company_accounts = Account.query.filter_by(
+        role=AccountRole.COMPANY, account_state=AccountState.REJECTED
+    ).all()
+    rejected_companies = [acc.company_profile for acc in rejected_company_accounts if acc.company_profile]
+    # Rejected placement drives
+    rejected_drives = PlacementDrive.query.filter_by(approval_status="Rejected").all()
+    # Rejected applications
+    rejected_apps = StudentApplication.query.filter_by(status="Rejected").all()
+
+    return render_template(
+        "admin/blacklisted.html",
+        rejected_students=rejected_students,
+        rejected_companies=rejected_companies,
+        rejected_drives=rejected_drives,
+        rejected_apps=rejected_apps
+    )

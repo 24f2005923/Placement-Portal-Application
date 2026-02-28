@@ -1,45 +1,164 @@
 {% extends 'base_admin.html' %}
 
-{% block title %}Blacklisted Accounts{% endblock %}
+{% block title %}Blacklisted & Rejected{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-12 text-danger">
-            <h2><i class="fas fa-ban me-2"></i>Blacklisted Accounts</h2>
+    <h4 class="fw-bold mb-4"><i class="fas fa-ban me-2 text-danger"></i>Blacklisted & Rejected</h4>
 
-            <hr>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover border-danger">
-                    <thead class="table-danger">
-                        <tr>
-                            <th>#</th>
-                            <th>User Name</th>
-                            <th>Reason</th>
-                            <th>Date Blacklisted</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ student.name }} ({{ student.id }})</td>
-                            <td>{{ student.blacklist_reason or 'No reason provided' }}</td>
-                            <td>{{ student.date_blacklisted or 'N/A' }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-success">Restore</button>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center">No blacklisted accounts found.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <!-- Rejected Students -->
+    <div class="card mb-4">
+        <div class="card-header bg-transparent border-0 d-flex align-items-center gap-2">
+            <i class="fas fa-user-times text-danger"></i>
+            <h6 class="fw-bold mb-0">Rejected Students</h6>
+            <span class="badge bg-danger ms-auto">{{ rejected_students|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for acc in rejected_students %}
+                    <tr>
+                        <td class="ps-4">{{ loop.index }}</td>
+                        <td>{{ acc.email }}</td>
+                        <td><span class="badge bg-secondary">Student</span></td>
+                        <td><span class="badge bg-danger-subtle text-danger border rounded-pill px-3">Rejected</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-3">No rejected students.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Rejected Companies -->
+    <div class="card mb-4">
+        <div class="card-header bg-transparent border-0 d-flex align-items-center gap-2">
+            <i class="fas fa-building-circle-xmark text-danger"></i>
+            <h6 class="fw-bold mb-0">Rejected Companies</h6>
+            <span class="badge bg-danger ms-auto">{{ rejected_companies|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Company Name</th>
+                        <th>Industry</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in rejected_companies %}
+                    <tr>
+                        <td class="ps-4">{{ loop.index }}</td>
+                        <td class="fw-bold">{{ company.name }}</td>
+                        <td>{{ company.industry_type or '—' }}</td>
+                        <td>{{ company.location or '—' }}</td>
+                        <td><span class="badge bg-danger-subtle text-danger border rounded-pill px-3">Rejected</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">No rejected companies.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Rejected Drives -->
+    <div class="card mb-4">
+        <div class="card-header bg-transparent border-0 d-flex align-items-center gap-2">
+            <i class="fas fa-calendar-xmark text-danger"></i>
+            <h6 class="fw-bold mb-0">Rejected Placement Drives</h6>
+            <span class="badge bg-danger ms-auto">{{ rejected_drives|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Rejection Reason</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for drive in rejected_drives %}
+                    <tr>
+                        <td class="ps-4">{{ loop.index }}</td>
+                        <td class="fw-bold">{{ drive.job_title }}</td>
+                        <td>{{ drive.company.name if drive.company else '—' }}</td>
+                        <td class="text-muted small">{{ drive.rejection_reason or 'No reason given' }}</td>
+                        <td>{{ drive.created_at.strftime('%d %b %Y') }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">No rejected drives.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Rejected Applications -->
+    <div class="card mb-4">
+        <div class="card-header bg-transparent border-0 d-flex align-items-center gap-2">
+            <i class="fas fa-file-circle-xmark text-danger"></i>
+            <h6 class="fw-bold mb-0">Rejected Applications</h6>
+            <span class="badge bg-danger ms-auto">{{ rejected_apps|length }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Student</th>
+                        <th>Drive / Job Title</th>
+                        <th>Applied On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in rejected_apps %}
+                    <tr>
+                        <td class="ps-4">{{ loop.index }}</td>
+                        <td>{{ app.student.full_name if app.student else '—' }}</td>
+                        <td>{{ app.drive.job_title if app.drive else '—' }}</td>
+                        <td>{{ app.applied_at.strftime('%d %b %Y') }}</td>
+                        <td><span class="badge bg-danger-subtle text-danger border rounded-pill px-3">Rejected</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">No rejected applications.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<style>
+    .bg-danger-subtle {
+        background-color: #fee2e2;
+    }
+</style>
 {% endblock %}

@@ -83,17 +83,18 @@
                             {% if recent_drives %}
                             {% for drive in recent_drives %}
                             <tr>
-                                <td class="ps-4 fw-600">{{ drive.title }}</td>
-                                <td>{{ drive.date }}</td>
+                                <td class="ps-4 fw-600">{{ drive.job_title }}</td>
+                                <td>{{ drive.created_at.strftime('%d %b, %Y') }}</td>
                                 <td>
                                     <span
-                                        class="badge {% if drive.status == 'Open' %}bg-success-subtle text-success{% else %}bg-info-subtle text-info{% endif %} border px-3 py-2 rounded-pill">
-                                        {{ drive.status }}
+                                        class="badge {% if drive.approval_status == 'Approved' %}bg-success-subtle text-success{% elif drive.approval_status == 'Rejected' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %} border px-3 py-2 rounded-pill">
+                                        {{ drive.approval_status }}
                                     </span>
                                 </td>
                                 <td class="pe-4">
-                                    <button class="btn btn-sm btn-light rounded-circle shadow-sm"><i
-                                            class="fas fa-eye"></i></button>
+                                    <a href="{{ url_for('company.create_drive') }}"
+                                        class="btn btn-sm btn-light rounded-circle shadow-sm"><i
+                                            class="fas fa-eye"></i></a>
                                 </td>
                             </tr>
                             {% endfor %}
