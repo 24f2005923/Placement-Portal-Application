@@ -266,13 +266,13 @@
             </a>
 
 
-            <a href="{{ url_for('company.dashboard') }}"
-                class="nav-link {% if request.endpoint == 'company.shortlisted' %}active{% endif %}">
+            <a href="{{ url_for('company.shortlisted_students') }}"
+                class="nav-link {% if request.endpoint == 'company.shortlisted_students' %}active{% endif %}">
                 <i class="fas fa-user-check"></i>
                 <span>Shortlisted Students</span>
             </a>
-            <a href="{{ url_for('company.dashboard') }}"
-                class="nav-link {% if request.endpoint == 'company.selected' %}active{% endif %}">
+            <a href="{{ url_for('company.selected_students') }}"
+                class="nav-link {% if request.endpoint == 'company.selected_students' %}active{% endif %}">
                 <i class="fas fa-award"></i>
                 <span>Selected Students</span>
             </a>

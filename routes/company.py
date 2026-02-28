@@ -101,6 +101,42 @@ def applications():
             
     return render_template("company/applications.html", applications=apps, company_name=company_name)
 
+@company_bp.route("/shortlisted")
+@active_account_required
+def shortlisted_students():
+    account_id = session.get("account_id")
+    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    company_name = profile.name if profile else "Company User"
+    
+    shortlisted = []
+    if profile:
+        drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
+        if drive_ids:
+            shortlisted = StudentApplication.query.filter(
+                StudentApplication.drive_id.in_(drive_ids),
+                StudentApplication.status == "Shortlisted"
+            ).all()
+            
+    return render_template("company/shortlisted.html", students=shortlisted, company_name=company_name)
+
+@company_bp.route("/selected")
+@active_account_required
+def selected_students():
+    account_id = session.get("account_id")
+    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    company_name = profile.name if profile else "Company User"
+    
+    selected = []
+    if profile:
+        drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
+        if drive_ids:
+            selected = StudentApplication.query.filter(
+                StudentApplication.drive_id.in_(drive_ids),
+                StudentApplication.status == "Selected"
+            ).all()
+            
+    return render_template("company/selected.html", students=selected, company_name=company_name)
+
 @company_bp.route("/profile")
 @active_account_required
 def profile():

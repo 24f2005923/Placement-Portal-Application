@@ -22,26 +22,57 @@
             </thead>
             <tbody>
                 {% if students %}
-                {% for student in students %}
+                {% for app in students %}
                 <tr>
-                    <td class="ps-4 fw-600">{{ student.student_name }}</td>
-                    <td>{{ student.roll_number }}</td>
-                    <td>{{ student.drive_title }}</td>
-                    <td><span class="badge bg-info-subtle text-info rounded-pill px-3">Interviewing</span></td>
+                    <td class="ps-4 fw-600">{{ app.student.full_name }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ app.student.university_register_number
+                            }}</span></td>
+                    <td>{{ app.drive.job_title }}</td>
+                    <td><span class="badge bg-info-subtle text-info rounded-pill px-4 py-2 border">Shortlisted</span>
+                    </td>
                     <td class="pe-4 text-end">
-                        <button class="btn btn-sm btn-primary-custom rounded-pill px-4">Select for Offer</button>
+                        <button class="btn btn-sm btn-primary-custom rounded-pill px-4 update-status"
+                            data-id="{{ app.id }}" data-status="Selected">Select for Offer</button>
                     </td>
                 </tr>
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="5" class="text-center py-4 text-muted">No students shortlisted yet.</td>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fas fa-user-clock d-block mb-2 opacity-25 fs-1"></i>
+                        No students shortlisted yet.
+                    </td>
                 </tr>
                 {% endif %}
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.update-status').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const appId = this.getAttribute('data-id');
+            const status = this.getAttribute('data-status');
+
+            if (!confirm(`Move this student to ${status} list?`)) return;
+
+            fetch(`/api/applications/${appId}/update-status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: status })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.message.includes('notified')) {
+                        location.reload(); // Reload to remove from shortlisted list
+                    }
+                })
+                .catch(err => alert('Failed to update status'));
+        });
+    });
+</script>
 
 <style>
     .fw-600 {

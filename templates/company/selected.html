@@ -22,23 +22,28 @@
             </thead>
             <tbody>
                 {% if students %}
-                {% for student in students %}
+                {% for app in students %}
                 <tr>
                     <td class="ps-4">
-                        <div class="fw-600">{{ student.student_name }}</div>
+                        <div class="fw-600">{{ app.student.full_name }}</div>
+                        <small class="text-muted">{{ app.student.institutional_email }}</small>
                     </td>
-                    <td>{{ student.roll_number }}</td>
-                    <td>{{ student.drive_title }}</td>
-                    <td><span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">Selected</span></td>
-                    <td class="pe-4">
-                        <button class="btn btn-sm btn-light border rounded shadow-sm"><i class="fas fa-eye me-1"></i>
-                            View Details</button>
+                    <td><span class="badge bg-light text-dark border">{{ app.student.university_register_number
+                            }}</span></td>
+                    <td>{{ app.drive.job_title }}</td>
+                    <td><span class="badge bg-success-subtle text-success rounded-pill px-3 py-2 border">Selected</span>
+                    </td>
+                    <td class="pe-4 text-end">
+                        <span class="text-muted small"><i class="fas fa-check-circle me-1"></i> Offer Sent</span>
                     </td>
                 </tr>
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="5" class="text-center py-4 text-muted">No students selected yet.</td>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fas fa-award d-block mb-2 opacity-25 fs-1"></i>
+                        No students selected yet.
+                    </td>
                 </tr>
                 {% endif %}
             </tbody>
