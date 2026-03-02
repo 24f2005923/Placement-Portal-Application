@@ -149,10 +149,3 @@ def notifications():
     student_name = profile.full_name if profile else "Student User"
     return render_template("student/notifications.html", student_name=student_name)
 
-@student_bp.route("/settings")
-@active_account_required
-def settings():
-    account_id = session.get("account_id")
-    profile = StudentProfile.query.filter_by(account_id=account_id).first()
-    student_name = profile.full_name if profile else "Student User"
-    return render_template("student/settings.html", student_name=student_name)

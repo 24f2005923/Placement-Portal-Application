@@ -158,11 +158,6 @@ def student_notifications():
         return render_template("student_notifications.html")
     return redirect(url_for("student_login"))
 
-@app.route("/student/settings")
-def student_settings():
-    if session.get("role") == "student":
-        return render_template("student_settings.html")
-    return redirect(url_for("student_login"))
 
 @app.route("/student/logout")
 def student_logout():

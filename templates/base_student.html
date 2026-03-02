@@ -191,10 +191,6 @@
             </a>
 
 
-            <a href="{{ url_for('student.settings') }}"
-                class="nav-link {% if request.endpoint == 'student.settings' %}active{% endif %}">
-                <i class="fas fa-cog"></i> <span>Settings</span>
-            </a>
             <a href="{{ url_for('auth.logout') }}" class="nav-link text-danger">
                 <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
             </a>
@@ -225,8 +221,6 @@
                     </li>
                     <li><a class="dropdown-item py-2" href="{{ url_for('student.profile') }}"><i
                                 class="fas fa-user-circle me-2 text-primary"></i> My Profile</a></li>
-                    <li><a class="dropdown-item py-2" href="{{ url_for('student.settings') }}"><i
-                                class="fas fa-cog me-2 text-warning"></i> Settings</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
