@@ -50,11 +50,11 @@ def create_drive():
     if request.method == "POST":
         try:
             # Support both new and old form layouts for safety
-            job_title = request.form.get("job_title") or request.form.get("title")
+            job_title = request.form.get("job_title") 
             job_description = request.form.get("job_description")
-            eligibility = request.form.get("eligibility_criteria") or request.form.get("eligibility_cgpa")
+            eligibility = request.form.get("eligibility_criteria") 
             job_location = request.form.get("job_location")
-            package = request.form.get("package_amount") or request.form.get("salary_package")
+            package = request.form.get("package_amount") 
             deadline_str = request.form.get("application_deadline")
 
             new_drive = PlacementDrive(

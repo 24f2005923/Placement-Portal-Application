@@ -59,7 +59,7 @@ def student_register():
             db.session.commit()
 
             flash("Registration successful! Await admin verification.", "success")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.student_login"))
 
         except Exception as e:
             db.session.rollback()
@@ -68,30 +68,7 @@ def student_register():
 
     return render_template("auth/student_register.html")
 
-@auth_bp.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        identifier = request.form.get("email")
-        password = request.form.get("password")
-        
-        account = Account.query.filter_by(login_identifier=identifier).first()
-        
-        if account and check_password_hash(account.password_hash, password):
-            account.record_login()
-            db.session.commit()
-            
-            session["account_id"] = account.id
-            session["role"] = account.role.value
-            
-            if account.role == AccountRole.ADMIN:
-                return redirect(url_for("admin.dashboard"))
-            elif account.role == AccountRole.STUDENT:
-                return redirect(url_for("student.dashboard"))
-            elif account.role == AccountRole.COMPANY:
-                return redirect(url_for("company.dashboard"))
-        
-        flash("Invalid credentials or account suspended.", "danger")
-    return render_template("auth/login.html")
+
 
 @auth_bp.route("/logout")
 def logout():
