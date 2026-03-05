@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request, flash
 from utils.decorators import active_account_required
+from utils.helpers import get_current_company_profile
 from models import CompanyProfile, PlacementDrive, StudentApplication, db
 from datetime import datetime
 import random
@@ -20,8 +21,7 @@ def company_required():
 @company_bp.route("/dashboard")
 @active_account_required
 def dashboard():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     if not profile: return redirect(url_for("auth.company_login"))
 
     drives = PlacementDrive.query.filter_by(company_id=profile.id).all()
@@ -40,8 +40,7 @@ def dashboard():
 @company_bp.route("/create-drive", methods=["GET", "POST"])
 @active_account_required
 def create_drive():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     
     if not profile:
         flash("Company profile not found.", "danger")
@@ -89,16 +88,14 @@ def create_drive():
 @company_bp.route("/my-drives")
 @active_account_required
 def my_drives():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     return render_template("company/my_drives.html", drives=[], company_name=company_name)
 
 @company_bp.route("/applications")
 @active_account_required
 def applications():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     
     apps = []
@@ -112,8 +109,7 @@ def applications():
 @company_bp.route("/shortlisted")
 @active_account_required
 def shortlisted_students():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     
     shortlisted = []
@@ -130,8 +126,7 @@ def shortlisted_students():
 @company_bp.route("/selected")
 @active_account_required
 def selected_students():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     
     selected = []
@@ -148,8 +143,7 @@ def selected_students():
 @company_bp.route("/profile")
 @active_account_required
 def profile():
-    account_id = session.get("account_id")
-    profile = CompanyProfile.query.filter_by(account_id=account_id).first()
+    profile = get_current_company_profile()
     
     company_data = None
     if profile:

@@ -6,6 +6,38 @@ from datetime import datetime
 
 auth_bp = Blueprint("auth", __name__)
 
+
+# ---------------------------------------------------------------------------
+# Private helper — shared authentication logic for all three portals
+# ---------------------------------------------------------------------------
+
+def _handle_login(role_enum, redirect_endpoint):
+    """
+    Reads email/password from the current POST request, looks up the matching
+    Account by login_identifier + role, validates the password, sets the
+    session, and returns a redirect Response on success or None on failure.
+    """
+    identifier = request.form.get("email", "").strip()
+    password   = request.form.get("password", "")
+
+    account = Account.query.filter_by(
+        login_identifier=identifier, role=role_enum
+    ).first()
+
+    if account and check_password_hash(account.password_hash, password):
+        account.record_login()
+        db.session.commit()
+        session["account_id"] = account.id
+        session["role"]       = account.role.value
+        return redirect(url_for(redirect_endpoint))
+
+    return None   # caller is responsible for flashing an error
+
+
+# ---------------------------------------------------------------------------
+# Student registration
+# ---------------------------------------------------------------------------
+
 @auth_bp.route("/student/register", methods=["GET", "POST"])
 def student_register():
     if request.method == "POST":
@@ -64,85 +96,67 @@ def student_register():
 
     return render_template("auth/student_register.html")
 
+
+# ---------------------------------------------------------------------------
+# Logout
+# ---------------------------------------------------------------------------
+
 @auth_bp.route("/logout")
 def logout():
     session.clear()
     flash("You have been logged out.", "success")
     return redirect(url_for("main.index"))
 
+
+# ---------------------------------------------------------------------------
+# Login routes — each delegates to _handle_login()
+# ---------------------------------------------------------------------------
+
 @auth_bp.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
-        identifier = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        print(f"DEBUG: Admin login attempt with identifier: '{identifier}'")
-        
-        account = Account.query.filter_by(login_identifier=identifier, role=AccountRole.ADMIN).first()
-        
-        if account:
-            print(f"DEBUG: Found account: {account}")
-            is_match = check_password_hash(account.password_hash, password)
-            print(f"DEBUG: Password match: {is_match}")
-            
-            if is_match:
-                account.record_login()
-                db.session.commit()
-                session["account_id"] = account.id
-                session["role"] = account.role.value
-                return redirect(url_for("admin.dashboard"))
-        else:
-            print(f"DEBUG: No admin account found with identifier: '{identifier}'")
-        
+        result = _handle_login(AccountRole.ADMIN, "admin.dashboard")
+        if result:
+            return result
         flash("Invalid admin credentials.", "danger")
     return render_template("auth/admin_login.html")
+
 
 @auth_bp.route("/student/login", methods=["GET", "POST"])
 def student_login():
     if request.method == "POST":
-        identifier = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        
-        account = Account.query.filter_by(login_identifier=identifier, role=AccountRole.STUDENT).first()
-        
-        if account and check_password_hash(account.password_hash, password):
-            account.record_login()
-            db.session.commit()
-            session["account_id"] = account.id
-            session["role"] = account.role.value
-            return redirect(url_for("student.dashboard"))
-        
+        result = _handle_login(AccountRole.STUDENT, "student.dashboard")
+        if result:
+            return result
         flash("Invalid student credentials.", "danger")
     return render_template("auth/student_login.html")
+
 
 @auth_bp.route("/company/login", methods=["GET", "POST"])
 def company_login():
     if request.method == "POST":
-        identifier = request.form.get("email", "").strip()
-        password = request.form.get("password", "")
-        
-        account = Account.query.filter_by(login_identifier=identifier, role=AccountRole.COMPANY).first()
-        
-        if account and check_password_hash(account.password_hash, password):
-            account.record_login()
-            db.session.commit()
-            session["account_id"] = account.id
-            session["role"] = account.role.value
-            return redirect(url_for("company.dashboard"))
-        
+        result = _handle_login(AccountRole.COMPANY, "company.dashboard")
+        if result:
+            return result
         flash("Invalid company credentials.", "danger")
     return render_template("auth/company_login.html")
+
+
+# ---------------------------------------------------------------------------
+# Company registration
+# ---------------------------------------------------------------------------
 
 @auth_bp.route("/company/register", methods=["GET", "POST"])
 def company_register():
     if request.method == "POST":
-        company_name = request.form.get("company_name")
+        company_name  = request.form.get("company_name")
         registration_id = request.form.get("company_id_field")
-        website = request.form.get("website")
+        website       = request.form.get("website")
         industry_type = request.form.get("industry_type")
-        location = request.form.get("location")
-        hr_contact = request.form.get("hr_contact")
-        work_email = request.form.get("work_email")
-        password = request.form.get("password")
+        location      = request.form.get("location")
+        hr_contact    = request.form.get("hr_contact")
+        work_email    = request.form.get("work_email")
+        password      = request.form.get("password")
 
         if Account.query.filter_by(login_identifier=work_email).first():
             flash("An account with this email already exists.", "danger")
