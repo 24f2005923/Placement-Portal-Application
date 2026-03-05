@@ -5,7 +5,6 @@ from sqlalchemy import Enum as SAEnum
 from database import db
 from models.enums import AccountRole, AccountState
 
-
 class Account(db.Model):
     __tablename__ = "accounts"
 
@@ -24,7 +23,6 @@ class Account(db.Model):
         default=AccountState.PENDING_VERIFICATION,
     )
 
-    # Relationships
     student_profile = db.relationship("StudentProfile", back_populates="account", uselist=False)
     company_profile = db.relationship("CompanyProfile", back_populates="account", uselist=False)
 

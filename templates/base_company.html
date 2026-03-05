@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Company Panel{% endblock %} | Placement HUB</title>
-    <!-- Google Fonts -->
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <!-- Bootstrap 5 -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -231,8 +231,7 @@
 
 <body>
 
-    <!-- Sidebar -->
-    <nav id="sidebar">
+<nav id="sidebar">
         <div class="sidebar-brand">
             <div class="brand-logo">
                 <i class="fas fa-rocket"></i>
@@ -253,8 +252,7 @@
                 <span>Company Profile</span>
             </a>
 
-
-            <a href="{{ url_for('company.create_drive') }}"
+<a href="{{ url_for('company.create_drive') }}"
                 class="nav-link {% if request.endpoint == 'company.create_drive' %}active{% endif %}">
                 <i class="fas fa-plus-circle"></i>
                 <span>Create Drive</span>
@@ -265,8 +263,7 @@
                 <span>Applications</span>
             </a>
 
-
-            <a href="{{ url_for('company.shortlisted_students') }}"
+<a href="{{ url_for('company.shortlisted_students') }}"
                 class="nav-link {% if request.endpoint == 'company.shortlisted_students' %}active{% endif %}">
                 <i class="fas fa-user-check"></i>
                 <span>Shortlisted Students</span>
@@ -286,8 +283,7 @@
         </div>
     </nav>
 
-    <!-- Page Content -->
-    <main id="main-content">
+<main id="main-content">
         <div class="top-navbar">
             <h4 class="fw-bold mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
             <div class="user-profile">
@@ -318,8 +314,7 @@
 
     {% block modals %}{% endblock %}
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

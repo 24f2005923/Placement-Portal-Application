@@ -8,7 +8,6 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "placement_secret_key"
 
-# Initialize Database
 init_db()
 
 @app.route("/")
@@ -55,22 +54,18 @@ def student_login():
 @app.route("/student/register", methods=["GET", "POST"])
 def student_register():
     if request.method == "POST":
-        # Placeholder for student registration logic
         flash("Student registration successful!", "success")
         return redirect(url_for("student_login"))
     return render_template("student_register.html")
 
-# Student Panel Routes
 @app.route("/student/dashboard")
 def student_dashboard():
     if session.get("role") == "student":
         student_id = session.get("student_id")
         conn = get_db_connection()
         
-        # Get counts for student
         app_count = conn.execute("SELECT COUNT(*) FROM applications WHERE student_id = ?", (student_id,)).fetchone()[0]
         
-        # Get latest drives
         latest_drives = conn.execute("""
             SELECT drives.*, companies.name as company_name 
             FROM drives 
@@ -78,7 +73,6 @@ def student_dashboard():
             ORDER BY drives.id DESC LIMIT 5
         """).fetchall()
         
-        # Get recent applications
         recent_apps = conn.execute("""
             SELECT applications.*, drives.title as drive_title, companies.name as company_name 
             FROM applications 
@@ -123,7 +117,6 @@ def student_profile():
         return render_template("student_profile.html", student=student)
     return redirect(url_for("student_login"))
 
-# Note: Student placement view is handled in routes/student.py
 @app.route("/student/search")
 def student_search_jobs():
     if session.get("role") == "student":
@@ -158,11 +151,9 @@ def student_notifications():
         return render_template("student_notifications.html")
     return redirect(url_for("student_login"))
 
-
 @app.route("/student/logout")
 def student_logout():
     session.clear()
-    flash("Successfully logged out from student portal", "success")
     return redirect(url_for("student_login"))
 
 @app.route("/company/login", methods=["GET", "POST"])
@@ -190,19 +181,16 @@ def company_login():
 @app.route("/company/register", methods=["GET", "POST"])
 def company_register():
     if request.method == "POST":
-        # Placeholder for company registration logic
         flash("Company registration submitted for approval!", "success")
         return redirect(url_for("company_login"))
     return render_template("company_register.html")
 
-# Company Panel Routes
 @app.route("/company/dashboard")
 def company_dashboard():
     if session.get("role") == "company":
         company_id = session.get("company_id")
         conn = get_db_connection()
         
-        # Get stats
         active_drives = conn.execute("SELECT COUNT(*) FROM drives WHERE company_id = ? AND status = 'Open'", (company_id,)).fetchone()[0]
         total_apps = conn.execute("""
             SELECT COUNT(*) FROM applications 
@@ -222,7 +210,6 @@ def company_dashboard():
             WHERE drives.company_id = ? AND applications.status = 'Selected'
         """, (company_id,)).fetchone()[0]
         
-        # Recent drives
         recent_drives = conn.execute("SELECT * FROM drives WHERE company_id = ? ORDER BY id DESC LIMIT 5", (company_id,)).fetchall()
         
         conn.close()
@@ -238,7 +225,6 @@ def company_dashboard():
 def company_profile():
     return render_template("company_profile.html")
 
-# Note: Company drive creation is handled in routes/company.py
 @app.route("/company/applications")
 def company_applications():
     if session.get("role") == "company":
@@ -316,8 +302,6 @@ def admin_companies():
         return render_template("admin_companies.html", companies=companies)
     else:
         return redirect(url_for("admin_login"))
-
-# Note: Admin drive management is handled in routes/admin.py
 
 @app.route("/admin/applications")
 def admin_applications():

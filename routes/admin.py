@@ -21,7 +21,6 @@ def dashboard():
 
 @admin_bp.route("/students")
 def students():
-    # View all student accounts
     students = Account.query.filter_by(role=AccountRole.STUDENT).all()
     return render_template("admin/students.html", students=students)
 
@@ -38,7 +37,6 @@ def verify_student(account_id, action):
 
 @admin_bp.route("/companies")
 def companies():
-    # View all company accounts
     accounts = Account.query.filter_by(role=AccountRole.COMPANY).all()
     company_profiles = [acc.company_profile for acc in accounts if acc.company_profile]
     return render_template("admin/companies.html", companies=company_profiles)
@@ -56,7 +54,6 @@ def verify_company(account_id, action):
 
 @admin_bp.route("/drives")
 def drives():
-    # Get all drives ordered by ID descending (latest first)
     all_drives = PlacementDrive.query.order_by(PlacementDrive.id.desc()).all()
     return render_template("admin/drives.html", drives=all_drives)
 
@@ -84,24 +81,19 @@ def reject_drive(drive_id):
 
 @admin_bp.route("/applications")
 def applications():
-    # Fetch all applications with joined student and drive info
     all_apps = StudentApplication.query.order_by(StudentApplication.applied_at.desc()).all()
     return render_template("admin/applications.html", applications=all_apps)
 @admin_bp.route("/blacklisted")
 def blacklisted():
     from models import CompanyProfile, StudentProfile
-    # Rejected student accounts
     rejected_students = Account.query.filter_by(
         role=AccountRole.STUDENT, account_state=AccountState.REJECTED
     ).all()
-    # Rejected company accounts
     rejected_company_accounts = Account.query.filter_by(
         role=AccountRole.COMPANY, account_state=AccountState.REJECTED
     ).all()
     rejected_companies = [acc.company_profile for acc in rejected_company_accounts if acc.company_profile]
-    # Rejected placement drives
     rejected_drives = PlacementDrive.query.filter_by(approval_status="Rejected").all()
-    # Rejected applications
     rejected_apps = StudentApplication.query.filter_by(status="Rejected").all()
 
     return render_template(

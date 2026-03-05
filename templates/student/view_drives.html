@@ -5,10 +5,26 @@
 
 {% block content %}
 
-<div class="row g-4">
+<div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 480px;">
+        <span class="input-group-text bg-white border-end-0">
+            <i class="fas fa-search text-muted"></i>
+        </span>
+        <input type="text" id="placementsSearch" class="form-control border-start-0 ps-0"
+            placeholder="Search by company, role, location, package…" autocomplete="off">
+        <button class="btn btn-outline-secondary border-start-0" id="clearPlacementsSearch" type="button"
+            style="display:none;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <small id="placementsNoResult" class="text-muted mt-2 d-none">No drives match your search.</small>
+</div>
+
+<div class="row g-4" id="drivesGrid">
     {% if drives %}
     {% for drive in drives %}
-    <div class="col-md-6">
+    <div class="col-md-6 drive-card"
+        data-search="{{ (drive.job_title ~ ' ' ~ drive.company.name ~ ' ' ~ drive.job_location ~ ' ' ~ drive.package_amount) | lower }}">
         <div class="card p-4 h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="bg-primary-subtle p-3 rounded-3">
@@ -48,19 +64,18 @@
 </div>
 
 <script>
+    // ── Apply button logic ──────────────────────────────────────────────────
     document.querySelectorAll('.apply-btn').forEach(button => {
         button.addEventListener('click', function () {
             const driveId = this.getAttribute('data-drive-id');
             const btn = this;
 
             btn.disabled = true;
-            btn.innerText = 'Applying...';
+            btn.innerText = 'Applying…';
 
             fetch(`/api/apply/${driveId}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
                 .then(response => response.json().then(data => ({ status: response.status, body: data })))
                 .then(res => {
@@ -82,6 +97,33 @@
                 });
         });
     });
+
+    // ── Client-side search (safe – no DB/SQL involvement) ──────────────────
+    (function () {
+        const input = document.getElementById('placementsSearch');
+        const clearBtn = document.getElementById('clearPlacementsSearch');
+        const noResult = document.getElementById('placementsNoResult');
+        const cards = document.querySelectorAll('.drive-card');
+
+        function filterCards() {
+            const q = input.value.trim().toLowerCase();
+            let visible = 0;
+            cards.forEach(card => {
+                const matches = !q || card.dataset.search.includes(q);
+                card.style.display = matches ? '' : 'none';
+                if (matches) visible++;
+            });
+            clearBtn.style.display = q ? 'block' : 'none';
+            noResult.classList.toggle('d-none', visible > 0 || !q);
+        }
+
+        input.addEventListener('input', filterCards);
+        clearBtn.addEventListener('click', function () {
+            input.value = '';
+            filterCards();
+            input.focus();
+        });
+    })();
 </script>
 
 <style>
@@ -91,6 +133,11 @@
 
     .bg-success-subtle {
         background-color: #f0fdf4;
+    }
+
+    #placementsSearch:focus {
+        box-shadow: none;
+        border-color: #ced4da;
     }
 </style>
 {% endblock %}

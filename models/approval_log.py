@@ -18,7 +18,6 @@ class ApprovalLog(db.Model):
         default=lambda: datetime.now(timezone.utc)
     )
 
-    # Relationships for convenience (optional but useful)
     target_account = db.relationship("Account", foreign_keys=[account_id])
     admin_account = db.relationship("Account", foreign_keys=[admin_id])
 

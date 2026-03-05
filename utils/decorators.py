@@ -20,8 +20,6 @@ def active_account_required(f):
             
         if account.account_state == AccountState.PENDING_VERIFICATION:
             flash("Your account is pending admin verification. Please wait.", "warning")
-            # For now redirect to a placeholder or back to index
-            # In a full app you'd have a specific /pending page
             return redirect(url_for("main.index"))
             
         if account.account_state == AccountState.REJECTED:

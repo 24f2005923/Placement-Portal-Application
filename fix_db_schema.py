@@ -13,11 +13,9 @@ def sync_schema():
         print("Starting focused schema sync...")
         
         try:
-            # Drop only the placement_drives table if it exists
             PlacementDrive.__table__.drop(db.engine, checkfirst=True)
             print("Dropped old 'placement_drives' table.")
             
-            # Recreate only the placement_drives table with new schema
             PlacementDrive.__table__.create(db.engine)
             print("Created new 'placement_drives' table with updated schema.")
             

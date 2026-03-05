@@ -17,9 +17,9 @@ class StudentProfile(db.Model):
     secondary_phone = db.Column(db.String(20), nullable=True)
 
     skills = db.Column(db.String(500), nullable=True)
+    cv_filename = db.Column(db.String(255), nullable=True)
     profile_completion_score = db.Column(db.Integer, default=0)
 
-    # Relationship back to Account
     account = db.relationship("Account", back_populates="student_profile")
 
     def __repr__(self) -> str:

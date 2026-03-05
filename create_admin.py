@@ -6,7 +6,6 @@ from werkzeug.security import generate_password_hash
 
 def create_admin():
     with app.app_context():
-        # Check if the specific admin already exists
         admin = Account.query.filter_by(login_identifier="admin@admin").first()
         if admin:
             admin.password_hash = generate_password_hash("password")

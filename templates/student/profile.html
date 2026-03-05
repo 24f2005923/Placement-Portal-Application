@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="row g-4">
-    <!-- Left Column: Profile Card -->
+
     <div class="col-lg-4">
         <div class="card p-4 text-center">
             <div class="mx-auto mb-3"
@@ -26,7 +26,6 @@
         </div>
     </div>
 
-    <!-- Right Column: View/Edit Tabs -->
     <div class="col-lg-8">
         <div class="card overflow-hidden">
             <div class="card-header bg-transparent p-0 border-bottom">
@@ -48,7 +47,7 @@
 
             <div class="card-body p-4">
                 <div class="tab-content" id="profileTabsContent">
-                    <!-- View Mode -->
+
                     <div class="tab-pane fade show active" id="view-content" role="tabpanel">
                         <h5 class="fw-bold mb-4">Academic Details</h5>
                         <div class="row mb-3">
@@ -68,6 +67,21 @@
                             <div class="col-sm-8 small">{{ student.dob or 'N/A' }}</div>
                         </div>
                         <hr class="my-4">
+                        <h5 class="fw-bold mb-4">Resume / CV</h5>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 text-muted small fw-bold">CV File</div>
+                            <div class="col-sm-8 small">
+                                {% if student.cv_filename %}
+                                <a href="{{ url_for('static', filename='uploads/cvs/' ~ student.cv_filename) }}"
+                                    class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank">
+                                    <i class="fas fa-file-pdf me-2"></i>View / Download CV
+                                </a>
+                                {% else %}
+                                <span class="text-muted">No CV uploaded.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <hr class="my-4">
                         <h5 class="fw-bold mb-4">Core Skills</h5>
                         <div class="d-flex flex-wrap gap-2">
                             {% if student.skills %}
@@ -80,9 +94,8 @@
                         </div>
                     </div>
 
-                    <!-- Edit Mode -->
                     <div class="tab-pane fade" id="edit-content" role="tabpanel">
-                        <form action="{{ url_for('student.profile') }}" method="POST">
+                        <form action="{{ url_for('student.profile') }}" method="POST" enctype="multipart/form-data">
                             <h5 class="fw-bold mb-4 text-primary">Update Information</h5>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -110,6 +123,13 @@
                                     <input type="text" name="skills" class="form-control rounded-3"
                                         value="{{ student.skills if student.skills else '' }}"
                                         placeholder="e.g. Python, SQL, Flask">
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label small fw-bold">Upload CV (PDF, DOC, DOCX)</label>
+                                    <input type="file" name="cv" class="form-control rounded-3">
+                                    {% if student.cv_filename %}
+                                    <small class="text-muted">Current: {{ student.cv_filename }}</small>
+                                    {% endif %}
                                 </div>
                                 <div class="col-12 mt-4 text-end">
                                     <button type="submit" class="btn btn-primary-custom rounded-pill px-5">Save

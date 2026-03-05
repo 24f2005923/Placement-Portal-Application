@@ -6,7 +6,6 @@ application_api_bp = Blueprint("application_api", __name__)
 
 @application_api_bp.route("/api/apply/<int:drive_id>", methods=["POST"])
 def apply_to_drive(drive_id):
-    # 1. Check if student is logged in
     if session.get("role") != "student" or not session.get("account_id"):
         return jsonify({"message": "Unauthorized"}), 401
 
@@ -16,12 +15,10 @@ def apply_to_drive(drive_id):
     if not student:
         return jsonify({"message": "Student profile not found"}), 404
 
-    # 2. Check if drive exists
     drive = PlacementDrive.query.get(drive_id)
     if not drive:
         return jsonify({"message": "Drive not found"}), 404
 
-    # 3. Check if student has already applied
     existing_application = StudentApplication.query.filter_by(
         student_id=student.id, drive_id=drive_id
     ).first()
@@ -29,7 +26,6 @@ def apply_to_drive(drive_id):
     if existing_application:
         return jsonify({"message": "Already applied"}), 400
 
-    # 4. Create new Application
     try:
         new_app = StudentApplication(
             student_id=student.id,
@@ -46,7 +42,6 @@ def apply_to_drive(drive_id):
 
 @application_api_bp.route("/api/applications", methods=["GET"])
 def get_all_applications():
-    # Requirement: For Admin view
     if session.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 401
 
@@ -68,7 +63,6 @@ def get_all_applications():
 
 @application_api_bp.route("/api/company/applications", methods=["GET"])
 def get_company_applications():
-    # Requirement: For Company view
     if session.get("role") != "company" or not session.get("account_id"):
         return jsonify({"message": "Unauthorized"}), 401
 
@@ -78,7 +72,6 @@ def get_company_applications():
     if not company_profile:
         return jsonify({"message": "Company profile not found"}), 404
 
-    # Filter applications where drive.company_id == company_profile.id
     applications = StudentApplication.query.join(PlacementDrive).filter(
         PlacementDrive.company_id == company_profile.id
     ).all()
@@ -98,7 +91,6 @@ def get_company_applications():
 
 @application_api_bp.route("/api/applications/<int:app_id>/update-status", methods=["POST"])
 def update_application_status(app_id):
-    # Allow Admin or Company to update status
     role = session.get("role")
     if role not in ["admin", "company"]:
         return jsonify({"message": "Unauthorized"}), 401
@@ -114,7 +106,6 @@ def update_application_status(app_id):
     if not app:
         return jsonify({"message": "Application not found"}), 404
 
-    # If company, verify they own the drive
     if role == "company":
         account_id = session.get("account_id")
         company = CompanyProfile.query.filter_by(account_id=account_id).first()
@@ -125,7 +116,6 @@ def update_application_status(app_id):
     app.status = new_status
     app.updated_at = datetime.now()
 
-    # Create Notification for Student
     try:
         msg = f"Your application for {app.drive.job_title} at {app.drive.company.name} has been updated to '{new_status}'."
         category = "Success" if new_status == "Selected" else ("Warning" if new_status == "Rejected" else "Info")

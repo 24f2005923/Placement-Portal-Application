@@ -12,7 +12,6 @@ def student_register():
         institutional_email = request.form.get("college_email")
         password = request.form.get("password")
         
-        # Profile fields
         full_name = request.form.get("full_name")
         university_reg_no = request.form.get("roll_number")
         gender_code = request.form.get("gender")
@@ -21,7 +20,6 @@ def student_register():
         primary_phone = request.form.get("mobile")
         secondary_phone = request.form.get("alt_mobile")
 
-        # Basic uniqueness checks
         if Account.query.filter_by(login_identifier=institutional_email).first():
             flash("An account with this email already exists.", "danger")
             return redirect(url_for("auth.student_register"))
@@ -33,7 +31,6 @@ def student_register():
         try:
             dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
 
-            # Create Account
             account = Account(
                 login_identifier=institutional_email,
                 password_hash=generate_password_hash(password),
@@ -43,7 +40,6 @@ def student_register():
             db.session.add(account)
             db.session.flush() # Get the account ID
 
-            # Create StudentProfile
             profile = StudentProfile(
                 account_id=account.id,
                 full_name=full_name,
@@ -67,8 +63,6 @@ def student_register():
             return redirect(url_for("auth.student_register"))
 
     return render_template("auth/student_register.html")
-
-
 
 @auth_bp.route("/logout")
 def logout():
@@ -150,7 +144,6 @@ def company_register():
         work_email = request.form.get("work_email")
         password = request.form.get("password")
 
-        # Basic uniqueness checks
         if Account.query.filter_by(login_identifier=work_email).first():
             flash("An account with this email already exists.", "danger")
             return redirect(url_for("auth.company_register"))
@@ -160,7 +153,6 @@ def company_register():
             return redirect(url_for("auth.company_register"))
 
         try:
-            # Create Account
             account = Account(
                 login_identifier=work_email,
                 password_hash=generate_password_hash(password),
@@ -170,7 +162,6 @@ def company_register():
             db.session.add(account)
             db.session.flush()
 
-            # Create CompanyProfile
             profile = CompanyProfile(
                 account_id=account.id,
                 name=company_name,

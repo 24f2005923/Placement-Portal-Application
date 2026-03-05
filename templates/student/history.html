@@ -4,6 +4,22 @@
 {% block page_title %}Past Placements{% endblock %}
 
 {% block content %}
+
+<div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 480px;">
+        <span class="input-group-text bg-white border-end-0">
+            <i class="fas fa-search text-muted"></i>
+        </span>
+        <input type="text" id="historySearch" class="form-control border-start-0 ps-0"
+            placeholder="Search by company, role, or package…" autocomplete="off">
+        <button class="btn btn-outline-secondary border-start-0" id="clearHistorySearch" type="button"
+            style="display:none;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <small id="historyNoResult" class="text-muted mt-2 d-none">No records match your search.</small>
+</div>
+
 <div class="card overflow-hidden">
     <div class="table-responsive">
         <table class="table align-middle table-hover mb-0">
@@ -19,7 +35,8 @@
             <tbody>
                 {% if applications %}
                 {% for app in applications %}
-                <tr>
+                <tr class="history-row"
+                    data-search="{{ (app.drive.company.name ~ ' ' ~ app.drive.job_title ~ ' ' ~ app.drive.package_amount) | lower }}">
                     <td class="ps-4">
                         <div class="fw-bold">{{ app.drive.company.name }}</div>
                     </td>
@@ -48,15 +65,54 @@
                     </td>
                 </tr>
                 {% endif %}
+                
+                <tr id="historySearchEmpty" style="display:none;">
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        <i class="fas fa-search me-2"></i>No records match your search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
 
+<script>
+    (function () {
+        const input = document.getElementById('historySearch');
+        const clearBtn = document.getElementById('clearHistorySearch');
+        const rows = document.querySelectorAll('.history-row');
+        const emptyRow = document.getElementById('historySearchEmpty');
+
+        function filterRows() {
+            const q = input.value.trim().toLowerCase();
+            let visible = 0;
+            rows.forEach(row => {
+                const matches = !q || row.dataset.search.includes(q);
+                row.style.display = matches ? '' : 'none';
+                if (matches) visible++;
+            });
+            clearBtn.style.display = q ? 'block' : 'none';
+            emptyRow.style.display = (rows.length > 0 && visible === 0 && q) ? '' : 'none';
+        }
+
+        input.addEventListener('input', filterRows);
+        clearBtn.addEventListener('click', function () {
+            input.value = '';
+            filterRows();
+            input.focus();
+        });
+    })();
+</script>
+
 <style>
     .font-monospace {
         font-family: 'Courier New', Courier, monospace;
         letter-spacing: 1px;
+    }
+
+    #historySearch:focus {
+        box-shadow: none;
+        border-color: #ced4da;
     }
 </style>
 {% endblock %}

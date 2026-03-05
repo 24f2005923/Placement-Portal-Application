@@ -49,7 +49,6 @@ def create_drive():
 
     if request.method == "POST":
         try:
-            # Support both new and old form layouts for safety
             job_title = request.form.get("job_title") 
             job_description = request.form.get("job_description")
             eligibility = request.form.get("eligibility_criteria") 
@@ -79,7 +78,6 @@ def create_drive():
     company_name = profile.name
     generated_drive_id = generate_drive_id()
     
-    # Fetch all drives created by this company
     existing_drives = PlacementDrive.query.filter_by(company_id=profile.id).order_by(PlacementDrive.created_at.desc()).all()
     
     return render_template("company/create_drive.html", 
@@ -105,10 +103,8 @@ def applications():
     
     apps = []
     if profile:
-        # Get all drives for this company
         drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
         if drive_ids:
-            # Get all applications for those drives
             apps = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids)).all()
             
     return render_template("company/applications.html", applications=apps, company_name=company_name)
@@ -168,5 +164,4 @@ def profile():
         }
     
     company_name = profile.name if profile else "Company User"
-    # Note: We'll need to create company/profile.html
     return render_template("company/profile.html", company_name=company_name, company=company_data)

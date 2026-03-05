@@ -15,7 +15,6 @@ class CompanyProfile(db.Model):
     hr_contact = db.Column(db.String(255), nullable=False)
     work_email = db.Column(db.String(255), unique=True, nullable=False)
 
-    # Relationship back to Account
     account = db.relationship("Account", back_populates="company_profile")
 
     def __repr__(self) -> str:

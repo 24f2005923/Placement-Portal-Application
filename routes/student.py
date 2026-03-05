@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, session, request, flash
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash, current_app
+import os
+from werkzeug.utils import secure_filename
 from datetime import datetime
 from database import db
 from utils.decorators import active_account_required
@@ -25,16 +27,13 @@ def dashboard():
     
     if profile:
         current_time = datetime.now()
-        # Latest 5 approved drives
         latest_drives = PlacementDrive.query.filter(
             PlacementDrive.approval_status == 'Approved',
             PlacementDrive.application_deadline >= current_time
         ).order_by(PlacementDrive.created_at.desc()).limit(5).all()
         
-        # Application count
         app_count = StudentApplication.query.filter_by(student_id=profile.id).count()
         
-        # Notifications
         unread_notifications_count = Notification.query.filter_by(
             student_id=profile.id, 
             is_read=False
@@ -44,7 +43,6 @@ def dashboard():
             student_id=profile.id
         ).order_by(Notification.created_at.desc()).limit(5).all()
         
-        # Applied drive IDs for button state
         applied_drive_ids = [app.drive_id for app in StudentApplication.query.filter_by(student_id=profile.id).all()]
         
     return render_template(
@@ -72,6 +70,19 @@ def profile():
             if dob_str:
                 profile.date_of_birth = datetime.strptime(dob_str, '%Y-%m-%d').date()
             profile.skills = request.form.get("skills")
+            cv_file = request.files.get("cv")
+            if cv_file and cv_file.filename:
+                allowed = {"pdf", "doc", "docx"}
+                ext = cv_file.filename.rsplit(".", 1)[-1].lower()
+                if ext in allowed:
+                    upload_dir = os.path.join(current_app.root_path, "static", "uploads", "cvs")
+                    os.makedirs(upload_dir, exist_ok=True)
+                    filename = secure_filename(f"cv_{profile.id}.{ext}")
+                    cv_file.save(os.path.join(upload_dir, filename))
+                    profile.cv_filename = filename
+                else:
+                    flash("Only PDF, DOC, or DOCX files are allowed for CV.", "danger")
+                    return redirect(url_for("student.profile"))
             db.session.commit()
             flash("Profile updated successfully!", "success")
         return redirect(url_for("student.profile"))
@@ -86,9 +97,10 @@ def profile():
             "personal_email": profile.personal_email,
             "mobile": profile.primary_phone,
             "dob": profile.date_of_birth.strftime('%Y-%m-%d') if profile.date_of_birth else None,
-            "skills": profile.skills
+            "skills": profile.skills,
+            "cv_filename": profile.cv_filename
         }
-    
+
     student_name = profile.full_name if profile else "Student User"
     return render_template("student/profile.html", student_name=student_name, student=student_data)
 
@@ -100,7 +112,6 @@ def placements():
     student_name = profile.full_name if profile else "Student User"
     
     current_time = datetime.now()
-    # Filter: Approved + Deadline hasn't passed
     drives = PlacementDrive.query.filter(
         PlacementDrive.approval_status == 'Approved',
         PlacementDrive.application_deadline >= current_time
@@ -148,4 +159,3 @@ def notifications():
     profile = StudentProfile.query.filter_by(account_id=account_id).first()
     student_name = profile.full_name if profile else "Student User"
     return render_template("student/notifications.html", student_name=student_name)
-

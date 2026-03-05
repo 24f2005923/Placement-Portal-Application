@@ -11,7 +11,6 @@ class Notification(db.Model):
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.now)
 
-    # Relationship
     student = db.relationship("StudentProfile", backref=db.backref("notifications", lazy=True))
 
     def __repr__(self):

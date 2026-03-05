@@ -4,9 +4,25 @@
 {% block page_title %}Application Tracking{% endblock %}
 
 {% block content %}
+
+<div class="mb-4">
+    <div class="input-group shadow-sm" style="max-width: 480px;">
+        <span class="input-group-text bg-white border-end-0">
+            <i class="fas fa-search text-muted"></i>
+        </span>
+        <input type="text" id="appsSearch" class="form-control border-start-0 ps-0"
+            placeholder="Search by company, role, or status…" autocomplete="off">
+        <button class="btn btn-outline-secondary border-start-0" id="clearAppsSearch" type="button"
+            style="display:none;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <small id="appsNoResult" class="text-muted mt-2 d-none">No applications match your search.</small>
+</div>
+
 <div class="card overflow-hidden">
     <div class="table-responsive">
-        <table class="table align-middle table-hover mb-0">
+        <table class="table align-middle table-hover mb-0" id="appsTable">
             <thead class="bg-light">
                 <tr>
                     <th class="ps-4 text-muted small fw-bold">COMPANY</th>
@@ -15,10 +31,11 @@
                     <th class="pe-4 text-muted small fw-bold text-end">STATUS</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="appsTableBody">
                 {% if applications %}
                 {% for app in applications %}
-                <tr>
+                <tr class="app-row"
+                    data-search="{{ (app.drive.company.name ~ ' ' ~ app.drive.job_title ~ ' ' ~ app.status) | lower }}">
                     <td class="ps-4 fw-bold">{{ app.drive.company.name }}</td>
                     <td>{{ app.drive.job_title }}</td>
                     <td>{{ app.applied_at.strftime('%d %b, %Y') }}</td>
@@ -31,14 +48,49 @@
                 </tr>
                 {% endfor %}
                 {% else %}
-                <tr>
-                    <td colspan="5" class="text-center py-4 text-muted">You haven't applied to any drives yet.</td>
+                <tr id="appsEmptyRow">
+                    <td colspan="4" class="text-center py-4 text-muted">You haven't applied to any drives yet.</td>
                 </tr>
                 {% endif %}
+                
+                <tr id="appsSearchEmpty" style="display:none;">
+                    <td colspan="4" class="text-center py-4 text-muted">
+                        <i class="fas fa-search me-2"></i>No applications match your search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    (function () {
+        const input = document.getElementById('appsSearch');
+        const clearBtn = document.getElementById('clearAppsSearch');
+        const rows = document.querySelectorAll('.app-row');
+        const emptyRow = document.getElementById('appsSearchEmpty');
+
+        function filterRows() {
+            const q = input.value.trim().toLowerCase();
+            let visible = 0;
+            rows.forEach(row => {
+                const matches = !q || row.dataset.search.includes(q);
+                row.style.display = matches ? '' : 'none';
+                if (matches) visible++;
+            });
+            clearBtn.style.display = q ? 'block' : 'none';
+            // Show "no match" row only when there are actual data rows but none match
+            emptyRow.style.display = (rows.length > 0 && visible === 0 && q) ? '' : 'none';
+        }
+
+        input.addEventListener('input', filterRows);
+        clearBtn.addEventListener('click', function () {
+            input.value = '';
+            filterRows();
+            input.focus();
+        });
+    })();
+</script>
 
 <style>
     .bg-warning-subtle {
@@ -51,6 +103,11 @@
 
     .bg-danger-subtle {
         background-color: #fef2f2;
+    }
+
+    #appsSearch:focus {
+        box-shadow: none;
+        border-color: #ced4da;
     }
 </style>
 {% endblock %}
