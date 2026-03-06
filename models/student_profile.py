@@ -20,7 +20,5 @@ class StudentProfile(db.Model):
     cv_filename = db.Column(db.String(255), nullable=True)
     profile_completion_score = db.Column(db.Integer, default=0)
 
-    account = db.relationship("Account", back_populates="student_profile")
-
     def __repr__(self) -> str:
         return f"<StudentProfile name={self.full_name} reg_no={self.university_register_number}>"

@@ -5,9 +5,10 @@ from routes.application_api import application_api_bp
 
 def create_app():
     app = Flask(__name__)
-    app.secret_key = "placement_secret_key"
+    app.config['SECRET_KEY'] = 'placement_secret_key'
 
     configure_db(app)
+    db.init_app(app)
 
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)

@@ -9,7 +9,7 @@ class Notification(db.Model):
     message = db.Column(db.String(500), nullable=False)
     category = db.Column(db.String(50), default="Info") # e.g., Success, Warning, Info
     is_read = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     student = db.relationship("StudentProfile", backref=db.backref("notifications", lazy=True))
 

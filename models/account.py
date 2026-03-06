@@ -1,6 +1,4 @@
-from datetime import datetime, timezone
-
-from sqlalchemy import Enum as SAEnum
+from datetime import datetime
 
 from database import db
 from models.enums import AccountRole, AccountState
@@ -13,31 +11,28 @@ class Account(db.Model):
     login_identifier = db.Column(db.String(255), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
 
-    role = db.Column(
-        SAEnum(AccountRole, values_callable=lambda e: [m.value for m in e]),
-        nullable=False,
-    )
+    role = db.Column(db.String(50), nullable=False)
     account_state = db.Column(
-        SAEnum(AccountState, values_callable=lambda e: [m.value for m in e]),
+        db.String(50),
         nullable=False,
-        default=AccountState.PENDING_VERIFICATION,
+        default=AccountState.PENDING_VERIFICATION.value,
     )
 
-    student_profile = db.relationship("StudentProfile", back_populates="account", uselist=False)
-    company_profile = db.relationship("CompanyProfile", back_populates="account", uselist=False)
+    student_profile = db.relationship("StudentProfile", backref="account", lazy=True)
+    company_profile = db.relationship("CompanyProfile", backref="account", lazy=True)
 
     created_at = db.Column(
-        db.DateTime(timezone=True),
+        db.DateTime,
         nullable=False,
-        default=lambda: datetime.now(timezone.utc),
+        default=datetime.utcnow,
     )
-    last_login_at = db.Column(db.DateTime(timezone=True), nullable=True)
+    last_login_at = db.Column(db.DateTime, nullable=True)
 
     def record_login(self):
-        self.last_login_at = datetime.now(timezone.utc)
+        self.last_login_at = datetime.utcnow()
 
     def is_active(self) -> bool:
-        return self.account_state == AccountState.ACTIVE
+        return self.account_state == AccountState.ACTIVE.value
 
     def __repr__(self) -> str:
-        return f"<Account id={self.id} role={self.role.value} state={self.account_state.value}>"
+        return f"<Account id={self.id} role={self.role} state={self.account_state}>"

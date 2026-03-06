@@ -16,9 +16,17 @@
                         <p class="text-muted">Register your organization to find the best talent</p>
                     </div>
 
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} rounded-pill px-4 mb-4">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
                     <form method="POST" class="needs-validation" novalidate>
                         <div class="row g-4">
-                            
+
                             <div class="col-12">
                                 <h5 class="fw-bold text-danger mb-3">Organization Details</h5>
                             </div>
@@ -65,7 +73,7 @@
                                     placeholder="City, Country" required>
                             </div>
 
-<div class="col-12 mt-4">
+                            <div class="col-12 mt-4">
                                 <h5 class="fw-bold text-danger mb-3">Contact Person (HR)</h5>
                             </div>
 
@@ -83,7 +91,7 @@
                                     placeholder="hr@company.com" required>
                             </div>
 
-<div class="col-12 mt-4">
+                            <div class="col-12 mt-4">
                                 <h5 class="fw-bold text-danger mb-3">Account Security</h5>
                             </div>
 

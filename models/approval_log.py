@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from database import db
 from models.enums import AccountState
 
@@ -9,17 +9,14 @@ class ApprovalLog(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), nullable=False)
     
-    previous_state = db.Column(db.Enum(AccountState), nullable=False)
-    new_state = db.Column(db.Enum(AccountState), nullable=False)
+    previous_state = db.Column(db.String(50), nullable=False)
+    new_state = db.Column(db.String(50), nullable=False)
     
     timestamp = db.Column(
-        db.DateTime(timezone=True), 
+        db.DateTime, 
         nullable=False, 
-        default=lambda: datetime.now(timezone.utc)
+        default=datetime.utcnow
     )
 
-    target_account = db.relationship("Account", foreign_keys=[account_id])
-    admin_account = db.relationship("Account", foreign_keys=[admin_id])
-
     def __repr__(self) -> str:
-        return f"<ApprovalLog account={self.account_id} transition={self.previous_state.value}->{self.new_state.value}>"
+        return f"<ApprovalLog account={self.account_id} transition={self.previous_state}->{self.new_state}>"

@@ -1,5 +1,4 @@
-from datetime import datetime, timezone
-from sqlalchemy import Enum as SAEnum
+from datetime import datetime
 from database import db
 from models.enums import DriveStatus
 
@@ -20,7 +19,7 @@ class PlacementDrive(db.Model):
     
     approval_status = db.Column(db.String(20), default="Pending")
     
-    created_at = db.Column(db.DateTime, default=datetime.now)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     approved_at = db.Column(db.DateTime, nullable=True)
     rejection_reason = db.Column(db.String(500), nullable=True)
 

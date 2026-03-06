@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
 from models import Account, StudentProfile, CompanyProfile, AccountRole, AccountState
 from datetime import datetime
+import re
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -41,16 +42,79 @@ def _handle_login(role_enum, redirect_endpoint):
 @auth_bp.route("/student/register", methods=["GET", "POST"])
 def student_register():
     if request.method == "POST":
-        institutional_email = request.form.get("college_email")
-        password = request.form.get("password")
+        institutional_email = request.form.get("college_email", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
         
-        full_name = request.form.get("full_name")
-        university_reg_no = request.form.get("roll_number")
-        gender_code = request.form.get("gender")
-        dob_str = request.form.get("dob")
-        personal_email = request.form.get("personal_email")
-        primary_phone = request.form.get("mobile")
-        secondary_phone = request.form.get("alt_mobile")
+        full_name = request.form.get("full_name", "").strip()
+        university_reg_no = request.form.get("roll_number", "").strip()
+        gender_code = request.form.get("gender", "").strip()
+        dob_str = request.form.get("dob", "").strip()
+        personal_email = request.form.get("personal_email", "").strip()
+        primary_phone = request.form.get("mobile", "").strip()
+        secondary_phone = request.form.get("alt_mobile", "").strip()
+
+        if not full_name:
+            flash("Full name must not be empty.", "danger")
+            return redirect(url_for("auth.student_register"))
+        if len(full_name) < 3 or not re.match(r"^[A-Za-z\s]+$", full_name):
+            flash("Full name must be at least 3 characters and contain only alphabets and spaces.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if not university_reg_no or not re.match(r"^[A-Za-z0-9]+$", university_reg_no):
+            flash("Register number must not be empty and must follow alphanumeric format like 2023CS101.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if not gender_code or gender_code not in ["Male", "Female", "Other"]:
+            flash("Please select a valid gender.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if not dob_str:
+            flash("Date of Birth is required.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        try:
+            if '-' in dob_str and len(dob_str.split('-')[0]) == 4:
+                dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+            else:
+                dob = datetime.strptime(dob_str, '%d-%m-%Y').date()
+        except ValueError:
+            flash("Date of Birth must be a valid date in format dd-mm-yyyy.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if not institutional_email:
+            flash("Official College Email must not be empty.", "danger")
+            return redirect(url_for("auth.student_register"))
+        if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", institutional_email) or not institutional_email.endswith("@college.edu"):
+            flash("Official College Email must be valid and end with @college.edu.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if not personal_email or not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", personal_email):
+            flash("Personal Email must be a valid email format.", "danger")
+            return redirect(url_for("auth.student_register"))
+        if personal_email == institutional_email:
+            flash("Personal Email should not be the same as Official College Email.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if not primary_phone or not re.match(r"^\d{10}$", primary_phone):
+            flash("Mobile Number must contain exactly 10 digits.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if secondary_phone:
+            if not re.match(r"^\d{10}$", secondary_phone):
+                flash("Alternate Mobile Number must contain exactly 10 digits.", "danger")
+                return redirect(url_for("auth.student_register"))
+            if secondary_phone == primary_phone:
+                flash("Alternate Mobile Number should not be the same as Mobile Number.", "danger")
+                return redirect(url_for("auth.student_register"))
+                
+        if not password or len(password) < 8 or not re.search(r"[A-Za-z]", password) or not re.search(r"[0-9]", password):
+            flash("Password must be at least 8 characters long and contain both letters and numbers.", "danger")
+            return redirect(url_for("auth.student_register"))
+            
+        if password != confirm_password:
+            flash("Password and Confirm Password must match.", "danger")
+            return redirect(url_for("auth.student_register"))
 
         if Account.query.filter_by(login_identifier=institutional_email).first():
             flash("An account with this email already exists.", "danger")
@@ -61,7 +125,6 @@ def student_register():
             return redirect(url_for("auth.student_register"))
 
         try:
-            dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
 
             account = Account(
                 login_identifier=institutional_email,
@@ -149,17 +212,45 @@ def company_login():
 @auth_bp.route("/company/register", methods=["GET", "POST"])
 def company_register():
     if request.method == "POST":
-        company_name  = request.form.get("company_name")
-        registration_id = request.form.get("company_id_field")
-        website       = request.form.get("website")
-        industry_type = request.form.get("industry_type")
-        location      = request.form.get("location")
-        hr_contact    = request.form.get("hr_contact")
-        work_email    = request.form.get("work_email")
-        password      = request.form.get("password")
+        company_name  = request.form.get("company_name", "").strip()
+        registration_id = request.form.get("company_id_field", "").strip()
+        website       = request.form.get("website", "").strip()
+        industry_type = request.form.get("industry_type", "").strip()
+        location      = request.form.get("location", "").strip()
+        hr_contact    = request.form.get("contact_number") or request.form.get("hr_contact", "").strip()
+        work_email    = request.form.get("work_email", "").strip()
+        password      = request.form.get("password", "")
 
-        if Account.query.filter_by(login_identifier=work_email).first():
-            flash("An account with this email already exists.", "danger")
+        if not company_name:
+            flash("Company name must not be empty.", "danger")
+            return redirect(url_for("auth.company_register"))
+            
+        if not work_email:
+            flash("Email must not be empty.", "danger")
+            return redirect(url_for("auth.company_register"))
+            
+        if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$", work_email):
+            flash("Invalid email format.", "danger")
+            return redirect(url_for("auth.company_register"))
+            
+        if not password:
+            flash("Password must not be empty.", "danger")
+            return redirect(url_for("auth.company_register"))
+            
+        if len(password) < 8 or not re.search(r"[A-Za-z]", password) or not re.search(r"[0-9]", password):
+            flash("Password must be at least 8 characters long and contain at least one letter and one number.", "danger")
+            return redirect(url_for("auth.company_register"))
+            
+        if not hr_contact:
+            flash("Contact number must not be empty.", "danger")
+            return redirect(url_for("auth.company_register"))
+            
+        if not re.match(r"^\d{10,12}$", hr_contact):
+            flash("Contact number must contain only digits and be between 10 and 12 characters.", "danger")
+            return redirect(url_for("auth.company_register"))
+
+        if Account.query.filter_by(login_identifier=work_email).first() or CompanyProfile.query.filter_by(work_email=work_email).first():
+            flash("Company with this email already exists", "danger")
             return redirect(url_for("auth.company_register"))
         
         if CompanyProfile.query.filter_by(company_id_field=registration_id).first():

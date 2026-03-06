@@ -16,9 +16,17 @@
                         <p class="text-muted">Join the placement portal to kickstart your career</p>
                     </div>
 
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} rounded-pill px-4 mb-4">{{ message }}</div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
                     <form method="POST" class="needs-validation" novalidate>
                         <div class="row g-4">
-                            
+
                             <div class="col-12">
                                 <h5 class="fw-bold text-primary mb-3">Basic Information</h5>
                             </div>
@@ -54,7 +62,7 @@
                                     class="form-control rounded-pill bg-light border-0 px-4 py-3" required>
                             </div>
 
-<div class="col-12 mt-4">
+                            <div class="col-12 mt-4">
                                 <h5 class="fw-bold text-primary mb-3">Contact Information</h5>
                             </div>
 
@@ -86,7 +94,7 @@
                                     placeholder="+91 9876543211">
                             </div>
 
-<div class="col-12 mt-4">
+                            <div class="col-12 mt-4">
                                 <h5 class="fw-bold text-primary mb-3">Security</h5>
                             </div>
 

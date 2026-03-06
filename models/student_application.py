@@ -9,7 +9,7 @@ class StudentApplication(db.Model):
     drive_id = db.Column(db.Integer, db.ForeignKey("placement_drives.id"), nullable=False)
     
     status = db.Column(db.String(50), default="Applied")
-    applied_at = db.Column(db.DateTime, default=datetime.now)
+    applied_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, nullable=True) # For future stage updates
     
     student = db.relationship("StudentProfile", backref=db.backref("student_applications", lazy=True))
