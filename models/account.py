@@ -18,21 +18,21 @@ class Account(db.Model):
         default=AccountState.PENDING_VERIFICATION.value,
     )
 
-    student_profile = db.relationship("StudentProfile", backref="account", lazy=True)
-    company_profile = db.relationship("CompanyProfile", backref="account", lazy=True)
+    student_profile = db.relationship("StudentProfile", back_populates="account", uselist=False, cascade="all, delete-orphan")
+    company_profile = db.relationship("CompanyProfile", back_populates="account", uselist=False, cascade="all, delete-orphan")
 
     created_at = db.Column(
         db.DateTime,
         nullable=False,
-        default=datetime.utcnow,
+        server_default=db.func.now(),
     )
     last_login_at = db.Column(db.DateTime, nullable=True)
 
-    def record_login(self):
-        self.last_login_at = datetime.utcnow()
-
     def is_active(self) -> bool:
         return self.account_state == AccountState.ACTIVE.value
+
+    def record_login(self):
+        self.last_login_at = datetime.now()
 
     def __repr__(self) -> str:
         return f"<Account id={self.id} role={self.role} state={self.account_state}>"

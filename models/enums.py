@@ -15,3 +15,20 @@ class DriveStatus(enum.Enum):
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
+
+class ApplicationStatus(enum.Enum):
+    APPLIED = "applied"
+    SHORTLISTED = "shortlisted"
+    SELECTED = "selected"
+    REJECTED = "rejected"
+
+class NotificationType(enum.Enum):
+    INFO = "info"
+    SUCCESS = "success"
+    WARNING = "warning"
+    ERROR = "error"
+
+class ApprovalAction(enum.Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"

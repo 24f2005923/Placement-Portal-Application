@@ -18,21 +18,21 @@ def active_account_required(f):
             session.clear()
             return redirect(url_for("auth.login"))
             
-        if account.account_state == AccountState.PENDING_VERIFICATION:
+        if account.account_state == AccountState.PENDING_VERIFICATION.value:
             flash("Your account is pending admin verification. Please wait.", "warning")
             return redirect(url_for("main.index"))
             
-        if account.account_state == AccountState.REJECTED:
+        if account.account_state == AccountState.REJECTED.value:
             flash("Your account registration was rejected by the admin.", "danger")
             session.clear()
             return redirect(url_for("auth.login"))
             
-        if account.account_state == AccountState.SUSPENDED:
+        if account.account_state == AccountState.SUSPENDED.value:
             flash("Your account has been suspended.", "danger")
             session.clear()
             return redirect(url_for("auth.login"))
             
-        if account.account_state != AccountState.ACTIVE:
+        if account.account_state != AccountState.ACTIVE.value:
             flash("Access denied. Your account is not active.", "danger")
             return redirect(url_for("main.index"))
             

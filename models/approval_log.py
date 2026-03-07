@@ -9,13 +9,13 @@ class ApprovalLog(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), nullable=False)
     
-    previous_state = db.Column(db.String(50), nullable=False)
-    new_state = db.Column(db.String(50), nullable=False)
+    previous_state = db.Column(db.Enum(AccountState), nullable=False)
+    new_state = db.Column(db.Enum(AccountState), nullable=False)
     
     timestamp = db.Column(
         db.DateTime, 
         nullable=False, 
-        default=datetime.utcnow
+        server_default=db.func.now()
     )
 
     def __repr__(self) -> str:

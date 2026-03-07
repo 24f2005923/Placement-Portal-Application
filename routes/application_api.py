@@ -1,6 +1,6 @@
-from flask import Blueprint, jsonify, session
-from models import StudentProfile, PlacementDrive, StudentApplication, CompanyProfile, Notification, db
-from datetime import datetime
+from flask import Blueprint, session, jsonify, request
+from models import StudentProfile, PlacementDrive, StudentApplication, CompanyProfile, Notification, db, ApplicationStatus, NotificationType
+from sqlalchemy.exc import IntegrityError
 
 application_api_bp = Blueprint("application_api", __name__)
 
@@ -19,6 +19,7 @@ def apply_to_drive(drive_id):
     if not drive:
         return jsonify({"message": "Drive not found"}), 404
 
+    # We still check for existing application for a better error message
     existing_application = StudentApplication.query.filter_by(
         student_id=student.id, drive_id=drive_id
     ).first()
@@ -30,12 +31,14 @@ def apply_to_drive(drive_id):
         new_app = StudentApplication(
             student_id=student.id,
             drive_id=drive_id,
-            status="Applied",
-            applied_at=datetime.now()
+            status=ApplicationStatus.APPLIED
         )
         db.session.add(new_app)
         db.session.commit()
         return jsonify({"message": "Application submitted successfully"}), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"message": "Already applied (database constraint)"}), 400
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": f"Error: {str(e)}"}), 500
@@ -95,7 +98,6 @@ def update_application_status(app_id):
     if role not in ["admin", "company"]:
         return jsonify({"message": "Unauthorized"}), 401
 
-    from flask import request
     data = request.get_json()
     new_status = data.get("status") # e.g., "Shortlisted", "Selected", "Rejected"
 
@@ -112,14 +114,19 @@ def update_application_status(app_id):
         if not company or app.drive.company_id != company.id:
             return jsonify({"message": "Unauthorized"}), 401
 
-    old_status = app.status
-    app.status = new_status
-    app.updated_at = datetime.now()
-
+    msg = f"Your application for {app.drive.job_title} at {app.drive.company.name} has been updated to '{new_status}'."
+    
+    # Map string status to Enum if possible, or use logic for category
     try:
-        msg = f"Your application for {app.drive.job_title} at {app.drive.company.name} has been updated to '{new_status}'."
-        category = "Success" if new_status == "Selected" else ("Warning" if new_status == "Rejected" else "Info")
-        
+        enum_status = ApplicationStatus[new_status.upper()]
+        app.status = enum_status
+    except (KeyError, AttributeError):
+        # Fallback if status name doesn't match enum exactly
+        pass
+
+    category = NotificationType.SUCCESS if new_status == "Selected" else (NotificationType.WARNING if new_status == "Rejected" else NotificationType.INFO)
+    
+    try:
         notification = Notification(
             student_id=app.student_id,
             message=msg,

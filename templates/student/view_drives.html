@@ -6,32 +6,32 @@
 {% block content %}
 
 <div class="mb-4">
-    <div class="input-group shadow-sm" style="max-width: 480px;">
+    <form action="{{ url_for('student.placements') }}" method="GET" class="input-group shadow-sm"
+        style="max-width: 480px;">
         <span class="input-group-text bg-white border-end-0">
             <i class="fas fa-search text-muted"></i>
         </span>
-        <input type="text" id="placementsSearch" class="form-control border-start-0 ps-0"
-            placeholder="Search by company, role, location, package…" autocomplete="off">
-        <button class="btn btn-outline-secondary border-start-0" id="clearPlacementsSearch" type="button"
-            style="display:none;">
+        <input type="text" name="search" class="form-control border-start-0 ps-0"
+            placeholder="Search by company, role, location, package…" autocomplete="off" value="{{ search_query }}">
+        {% if search_query %}
+        <a href="{{ url_for('student.placements') }}" class="btn btn-outline-secondary border-start-0" type="button">
             <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <small id="placementsNoResult" class="text-muted mt-2 d-none">No drives match your search.</small>
+        </a>
+        {% endif %}
+        <button class="btn btn-primary-custom px-4" type="submit">Search</button>
+    </form>
 </div>
 
 <div class="row g-4" id="drivesGrid">
     {% if drives %}
     {% for drive in drives %}
-    <div class="col-md-6 drive-card"
-        data-search="{{ (drive.job_title ~ ' ' ~ drive.company.name ~ ' ' ~ drive.job_location ~ ' ' ~ drive.package_amount) | lower }}">
-        <div class="card p-4 h-100">
+    <div class="col-md-6 drive-card">
+        <div class="portal-panel p-4 h-100">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <div class="bg-primary-subtle p-3 rounded-3">
                     <i class="fas fa-building text-primary fs-4"></i>
                 </div>
-                <span class="badge bg-success-subtle text-success rounded-pill px-3 py-2">{{ drive.approval_status
-                    }}</span>
+                {{ drive.approval_status | status_badge }}
             </div>
             <h5 class="fw-bold mb-1">{{ drive.job_title }}</h5>
             <p class="text-primary fw-bold small mb-3">{{ drive.company.name }}</p>
@@ -42,7 +42,7 @@
             <hr>
             <div class="d-flex justify-content-between align-items-center">
                 <div class="small"><i class="fas fa-calendar-alt me-2 text-muted"></i> Deadline: {{
-                    drive.application_deadline.strftime('%d %b, %Y') }}</div>
+                    drive.application_deadline | format_drive_date }}</div>
                 {% if drive.id in applied_drive_ids %}
                 <button class="btn btn-sm btn-success rounded-pill" disabled>Applied</button>
                 {% else %}
@@ -56,9 +56,16 @@
     {% endfor %}
     {% else %}
     <div class="col-12 text-center py-5">
+        {% if search_query %}
+        <div class="mb-3"><i class="fas fa-search-minus fs-1 text-muted opacity-25"></i></div>
+        <h5 class="text-muted">No drives match your search: "<strong>{{ search_query }}</strong>"</h5>
+        <a href="{{ url_for('student.placements') }}" class="btn btn-outline-primary rounded-pill px-4 mt-2">Clear
+            Search Result</a>
+        {% else %}
         <div class="mb-3"><i class="fas fa-search-minus fs-1 text-muted"></i></div>
         <h5 class="text-muted">No active placement drives found at the moment.</h5>
         <p class="small text-muted">Check back later for new openings!</p>
+        {% endif %}
     </div>
     {% endif %}
 </div>
@@ -97,33 +104,6 @@
                 });
         });
     });
-
-    // ── Client-side search (safe – no DB/SQL involvement) ──────────────────
-    (function () {
-        const input = document.getElementById('placementsSearch');
-        const clearBtn = document.getElementById('clearPlacementsSearch');
-        const noResult = document.getElementById('placementsNoResult');
-        const cards = document.querySelectorAll('.drive-card');
-
-        function filterCards() {
-            const q = input.value.trim().toLowerCase();
-            let visible = 0;
-            cards.forEach(card => {
-                const matches = !q || card.dataset.search.includes(q);
-                card.style.display = matches ? '' : 'none';
-                if (matches) visible++;
-            });
-            clearBtn.style.display = q ? 'block' : 'none';
-            noResult.classList.toggle('d-none', visible > 0 || !q);
-        }
-
-        input.addEventListener('input', filterCards);
-        clearBtn.addEventListener('click', function () {
-            input.value = '';
-            filterCards();
-            input.focus();
-        });
-    })();
 </script>
 
 <style>
@@ -133,11 +113,6 @@
 
     .bg-success-subtle {
         background-color: #f0fdf4;
-    }
-
-    #placementsSearch:focus {
-        box-shadow: none;
-        border-color: #ced4da;
     }
 </style>
 {% endblock %}

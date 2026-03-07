@@ -4,16 +4,19 @@
 {% block page_title %}Student Applications{% endblock %}
 
 {% block content %}
-<div class="card overflow-hidden">
+<div class="portal-panel overflow-hidden">
     <div class="card-header bg-transparent border-0 p-4 d-flex justify-content-between align-items-center">
         <div>
         </div>
-        <div class="d-flex gap-2">
-            <input type="text" class="form-control form-control-sm rounded-pill px-3" placeholder="Search student...">
-            <select class="form-select form-select-sm rounded-pill px-3">
-                <option>All Drives</option>
-            </select>
-        </div>
+        <form action="{{ url_for('company.applications') }}" method="GET" class="d-flex gap-2">
+            <input type="text" name="search" class="form-control form-control-sm rounded-pill px-3"
+                placeholder="Search student or role..." value="{{ search_query }}">
+            {% if search_query %}
+            <a href="{{ url_for('company.applications') }}"
+                class="btn btn-sm btn-outline-secondary rounded-pill">Clear</a>
+            {% endif %}
+            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Search</button>
+        </form>
     </div>
     <div class="table-responsive">
         <table class="table align-middle table-hover mb-0">
@@ -43,10 +46,7 @@
                     <td>{{ app.drive.job_title }}</td>
                     <td>--</td>
                     <td id="status-{{ app.id }}">
-                        <span
-                            class="badge {% if app.status == 'Applied' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% elif app.status == 'Shortlisted' %}bg-info-subtle text-info{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
-                            {{ app.status }}
-                        </span>
+                        {{ app.status | status_badge }}
                     </td>
                     <td class="pe-4">
                         <div class="btn-group btn-group-sm">
@@ -62,7 +62,14 @@
                 {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="6" class="text-center py-4 text-muted">No applications received yet.</td>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        {% if search_query %}
+                        <i class="fas fa-search me-2 opacity-50"></i> No results found for "<strong>{{ search_query
+                            }}</strong>"
+                        {% else %}
+                        No applications received yet.
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endif %}
             </tbody>

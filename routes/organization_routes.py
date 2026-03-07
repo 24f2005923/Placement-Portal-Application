@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, session, request, flash
 from utils.decorators import active_account_required
 from utils.helpers import get_current_company_profile
-from models import CompanyProfile, PlacementDrive, StudentApplication, db
+from models import CompanyProfile, PlacementDrive, StudentApplication, db, DriveStatus, ApplicationStatus
 from datetime import datetime
 import random
 import string
@@ -9,37 +9,48 @@ import string
 company_bp = Blueprint("company", __name__, url_prefix="/company")
 
 def generate_drive_id():
+    # helper to build a unique drive identifier
     date_str = datetime.now().strftime("%Y%m%d")
     random_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     return f"DRV-{date_str}-{random_str}"
 
 @company_bp.before_request
 def company_required():
+    # gotta make sure it's a company user and not some random student or admin
     if session.get("role") != "company":
         return redirect(url_for("auth.company_login"))
 
-@company_bp.route("/dashboard")
+@company_bp.route("/dashboard", endpoint="dashboard")
 @active_account_required
-def dashboard():
+def hiring_partner_overview():
     profile = get_current_company_profile()
     if not profile: return redirect(url_for("auth.company_login"))
 
     drives = PlacementDrive.query.filter_by(company_id=profile.id).all()
     drive_ids = [d.id for d in drives]
     
-    active_count = PlacementDrive.query.filter_by(company_id=profile.id, approval_status='Approved').count()
+    # temporary guard for empty drives
+    active_count = PlacementDrive.query.filter_by(company_id=profile.id, approval_status=DriveStatus.APPROVED).count()
     total_apps = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids)).count() if drive_ids else 0
-    pending = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == 'Applied').count() if drive_ids else 0
-    hired = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == 'Selected').count() if drive_ids else 0
+    
+    # status tracking breakdown
+    status_counts = {
+        'Applied': StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == ApplicationStatus.APPLIED).count() if drive_ids else 0,
+        'Shortlisted': StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == ApplicationStatus.SHORTLISTED).count() if drive_ids else 0,
+        'Selected': StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == ApplicationStatus.SELECTED).count() if drive_ids else 0,
+        'Rejected': StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == ApplicationStatus.REJECTED).count() if drive_ids else 0
+    }
+    
     recent = PlacementDrive.query.filter_by(company_id=profile.id).order_by(PlacementDrive.created_at.desc()).limit(5).all()
 
     return render_template("company/dashboard.html", company_name=profile.name, 
                            active_drives=active_count, total_apps=total_apps, 
-                           pending_review=pending, hired=hired, recent_drives=recent)
+                           pending_review=status_counts['Applied'], hired=status_counts['Selected'], 
+                           status_counts=status_counts, recent_drives=recent)
 
-@company_bp.route("/create-drive", methods=["GET", "POST"])
+@company_bp.route("/create-drive", methods=["GET", "POST"], endpoint="create_drive")
 @active_account_required
-def create_drive():
+def initiate_recruitment_drive():
     profile = get_current_company_profile()
     
     if not profile:
@@ -48,6 +59,7 @@ def create_drive():
 
     if request.method == "POST":
         try:
+            # persisting drive details to the catalog
             job_title = request.form.get("job_title") 
             job_description = request.form.get("job_description")
             eligibility = request.form.get("eligibility_criteria") 
@@ -63,7 +75,7 @@ def create_drive():
                 job_location=job_location or "On-Site",
                 package_amount=package,
                 application_deadline=datetime.strptime(deadline_str, '%Y-%m-%d'),
-                approval_status="Pending"
+                approval_status=DriveStatus.PENDING
             )
             
             db.session.add(new_drive)
@@ -85,30 +97,42 @@ def create_drive():
                            drive_id=generated_drive_id,
                            drives=existing_drives)
 
-@company_bp.route("/my-drives")
+@company_bp.route("/my-drives", endpoint="my_drives")
 @active_account_required
-def my_drives():
+def personal_drive_catalog():
     profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     return render_template("company/my_drives.html", drives=[], company_name=company_name)
 
-@company_bp.route("/applications")
+@company_bp.route("/applications", endpoint="applications")
 @active_account_required
-def applications():
+def track_received_applications():
     profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
+    search_query = request.args.get('search', '').strip()
     
     apps = []
     if profile:
-        drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
-        if drive_ids:
-            apps = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids)).all()
+        from models import StudentProfile, PlacementDrive
+        
+        query = StudentApplication.query.join(PlacementDrive).filter(PlacementDrive.company_id == profile.id)
+        
+        if search_query:
+            query = query.join(StudentProfile).filter(
+                db.or_(
+                    StudentProfile.full_name.ilike(f"%{search_query}%"),
+                    StudentProfile.university_register_number.ilike(f"%{search_query}%"),
+                    PlacementDrive.job_title.ilike(f"%{search_query}%")
+                )
+            )
+        
+        apps = query.all()
             
-    return render_template("company/applications.html", applications=apps, company_name=company_name)
+    return render_template("company/applications.html", applications=apps, company_name=company_name, search_query=search_query)
 
-@company_bp.route("/shortlisted")
+@company_bp.route("/shortlisted", endpoint="shortlisted_students")
 @active_account_required
-def shortlisted_students():
+def view_shortlisted_candidates():
     profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     
@@ -118,14 +142,14 @@ def shortlisted_students():
         if drive_ids:
             shortlisted = StudentApplication.query.filter(
                 StudentApplication.drive_id.in_(drive_ids),
-                StudentApplication.status == "Shortlisted"
+                StudentApplication.status == ApplicationStatus.SHORTLISTED
             ).all()
             
     return render_template("company/shortlisted.html", students=shortlisted, company_name=company_name)
 
-@company_bp.route("/selected")
+@company_bp.route("/selected", endpoint="selected_students")
 @active_account_required
-def selected_students():
+def view_final_selections():
     profile = get_current_company_profile()
     company_name = profile.name if profile else "Company User"
     
@@ -135,14 +159,14 @@ def selected_students():
         if drive_ids:
             selected = StudentApplication.query.filter(
                 StudentApplication.drive_id.in_(drive_ids),
-                StudentApplication.status == "Selected"
+                StudentApplication.status == ApplicationStatus.SELECTED
             ).all()
             
     return render_template("company/selected.html", students=selected, company_name=company_name)
 
-@company_bp.route("/profile")
+@company_bp.route("/profile", endpoint="profile")
 @active_account_required
-def profile():
+def manage_organization_profile():
     profile = get_current_company_profile()
     
     company_data = None

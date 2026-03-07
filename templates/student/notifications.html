@@ -8,67 +8,78 @@
     <div class="col-lg-10">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold mb-0">System Notifications</h5>
-            <button class="btn btn-sm btn-light rounded-pill">Mark all as read</button>
+            <button class="btn btn-sm btn-light rounded-pill" onclick="markAllRead()">Mark all as read</button>
+        </div>
+
+        <div class="mb-4">
+            <form action="{{ url_for('student.notifications') }}" method="GET" class="input-group shadow-sm"
+                style="max-width: 480px;">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="fas fa-search text-muted"></i>
+                </span>
+                <input type="text" name="search" class="form-control border-start-0 ps-0"
+                    placeholder="Search by message or category…" autocomplete="off" value="{{ search_query }}">
+                {% if search_query %}
+                <a href="{{ url_for('student.notifications') }}" class="btn btn-outline-secondary border-start-0"
+                    type="button">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% endif %}
+                <button class="btn btn-primary-custom px-4" type="submit">Search</button>
+            </form>
         </div>
 
         <div id="notifications-container">
+            {% if notifications %}
+            <div id="notifications-list" class="d-flex flex-column gap-3">
+                {% for n in notifications %}
+                <div
+                    class="card border-0 shadow-sm p-4 {{ 'opacity-75' if n.is_read else 'border-start border-4 ' ~ ('border-success' if n.category.name == 'SUCCESS' else ('border-danger' if n.category.name == 'WARNING' else 'border-info')) }}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex gap-3">
+                            <div
+                                class="bg-{{ 'success' if n.category.name == 'SUCCESS' else ('danger' if n.category.name == 'WARNING' else 'primary') }}-subtle p-3 rounded-pill">
+                                <i
+                                    class="fas {{ 'fa-check' if n.category.name == 'SUCCESS' else ('fa-times' if n.category.name == 'WARNING' else 'fa-info') }} text-{{ 'success' if n.category.name == 'SUCCESS' else ('danger' if n.category.name == 'WARNING' else 'primary') }}"></i>
+                            </div>
+                            <div>
+                                <p class="mb-1 fw-600">{{ n.message | safe }}</p>
+                                <small class="text-muted"><i class="far fa-clock me-1"></i>{{
+                                    n.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                            </div>
+                        </div>
+                        {% if not n.is_read %}
+                        <span class="badge bg-primary rounded-pill">New</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
             <div class="card p-5 text-center shadow-sm" id="empty-state">
                 <div class="mb-3">
                     <i class="fas fa-bell-slash text-muted fs-1"></i>
                 </div>
+                {% if search_query %}
+                <h5 class="text-muted">No Matching Notifications</h5>
+                <p class="text-muted small">No notifications match your search criteria.</p>
+                {% else %}
                 <h5 class="text-muted">No New Notifications</h5>
                 <p class="text-muted small">We'll notify you here about updates to your applications and upcoming
                     drives.</p>
+                {% endif %}
             </div>
-            <div id="notifications-list" class="d-flex flex-column gap-3"></div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <script>
-    function fetchNotifications() {
-        const list = document.getElementById('notifications-list');
-        const empty = document.getElementById('empty-state');
-
-        fetch('/api/notifications')
-            .then(res => res.json())
-            .then(data => {
-                if (data.length > 0) {
-                    empty.classList.add('d-none');
-                    list.innerHTML = data.map(n => `
-                        <div class="card border-0 shadow-sm p-4 ${n.is_read ? 'opacity-75' : 'border-start border-4 ' + (n.category === 'Success' ? 'border-success' : (n.category === 'Warning' ? 'border-danger' : 'border-info'))}">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="d-flex gap-3">
-                                    <div class="bg-${n.category === 'Success' ? 'success' : (n.category === 'Warning' ? 'danger' : 'primary')}-subtle p-3 rounded-pill">
-                                        <i class="fas ${n.category === 'Success' ? 'fa-check' : (n.category === 'Warning' ? 'fa-times' : 'fa-info')} text-${n.category === 'Success' ? 'success' : (n.category === 'Warning' ? 'danger' : 'primary')}"></i>
-                                    </div>
-                                    <div>
-                                        <p class="mb-1 fw-600">${n.message}</p>
-                                        <small class="text-muted"><i class="far fa-clock me-1"></i>${n.created_at}</small>
-                                    </div>
-                                </div>
-                                ${!n.is_read ? '<span class="badge bg-primary rounded-pill">New</span>' : ''}
-                            </div>
-                        </div>
-                    `).join('');
-                } else {
-                    empty.classList.remove('d-none');
-                    list.innerHTML = '';
-                }
-            })
-            .catch(err => console.error('Error fetching notifications:', err));
-    }
-
-    document.querySelector('.btn-light').addEventListener('click', function () {
+    function markAllRead() {
         fetch('/api/notifications/mark-read', { method: 'POST' })
-            .then(() => fetchNotifications())
+            .then(() => window.location.reload())
             .catch(err => alert('Failed to mark as read'));
-    });
-
-    // Initial fetch
-    fetchNotifications();
-    // Refresh every 30 seconds
-    setInterval(fetchNotifications, 30000);
+    }
 </script>
 
 <style>

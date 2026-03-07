@@ -5,6 +5,7 @@ class StudentProfile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), unique=True, nullable=False)
+    account = db.relationship("Account", back_populates="student_profile")
 
     full_name = db.Column(db.String(255), nullable=False)
     university_register_number = db.Column(db.String(100), unique=True, nullable=False)

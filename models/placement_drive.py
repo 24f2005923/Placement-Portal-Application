@@ -17,10 +17,14 @@ class PlacementDrive(db.Model):
     
     application_deadline = db.Column(db.DateTime, nullable=False)
     
-    approval_status = db.Column(db.String(20), default="Pending")
+    approval_status = db.Column(
+        db.Enum(DriveStatus),
+        nullable=False,
+        default=DriveStatus.PENDING
+    )
     
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    approved_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+    approved_at = db.Column(db.DateTime, nullable=True, onupdate=db.func.now())
     rejection_reason = db.Column(db.String(500), nullable=True)
 
     def __repr__(self):

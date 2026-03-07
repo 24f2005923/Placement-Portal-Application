@@ -6,23 +6,25 @@
 {% block content %}
 
 <div class="mb-4">
-    <div class="input-group shadow-sm" style="max-width: 480px;">
+    <form action="{{ url_for('student.applications') }}" method="GET" class="input-group shadow-sm"
+        style="max-width: 480px;">
         <span class="input-group-text bg-white border-end-0">
             <i class="fas fa-search text-muted"></i>
         </span>
-        <input type="text" id="appsSearch" class="form-control border-start-0 ps-0"
-            placeholder="Search by company, role, or status…" autocomplete="off">
-        <button class="btn btn-outline-secondary border-start-0" id="clearAppsSearch" type="button"
-            style="display:none;">
+        <input type="text" name="search" class="form-control border-start-0 ps-0"
+            placeholder="Search by company, role, or status…" autocomplete="off" value="{{ search_query }}">
+        {% if search_query %}
+        <a href="{{ url_for('student.applications') }}" class="btn btn-outline-secondary border-start-0" type="button">
             <i class="fas fa-times"></i>
-        </button>
-    </div>
-    <small id="appsNoResult" class="text-muted mt-2 d-none">No applications match your search.</small>
+        </a>
+        {% endif %}
+        <button class="btn btn-primary-custom px-4" type="submit">Search</button>
+    </form>
 </div>
 
-<div class="card overflow-hidden">
+<div class="portal-panel overflow-hidden">
     <div class="table-responsive">
-        <table class="table align-middle table-hover mb-0" id="appsTable">
+        <table class="table align-middle table-hover mb-0">
             <thead class="bg-light">
                 <tr>
                     <th class="ps-4 text-muted small fw-bold">COMPANY</th>
@@ -31,83 +33,33 @@
                     <th class="pe-4 text-muted small fw-bold text-end">STATUS</th>
                 </tr>
             </thead>
-            <tbody id="appsTableBody">
+            <tbody>
                 {% if applications %}
                 {% for app in applications %}
-                <tr class="app-row"
-                    data-search="{{ (app.drive.company.name ~ ' ' ~ app.drive.job_title ~ ' ' ~ app.status) | lower }}">
+                <tr class="app-row">
                     <td class="ps-4 fw-bold">{{ app.drive.company.name }}</td>
                     <td>{{ app.drive.job_title }}</td>
-                    <td>{{ app.applied_at.strftime('%d %b, %Y') }}</td>
+                    <td>{{ app.applied_at | format_drive_date }}</td>
                     <td class="pe-4 text-end">
-                        <span
-                            class="badge {% if app.status == 'Applied' %}bg-warning-subtle text-warning{% elif app.status == 'Selected' %}bg-success-subtle text-success{% elif app.status == 'Shortlisted' %}bg-info-subtle text-info{% else %}bg-danger-subtle text-danger{% endif %} border px-3 py-2 rounded-pill">
-                            {{ app.status }}
-                        </span>
+                        {{ app.status | status_badge }}
                     </td>
                 </tr>
                 {% endfor %}
                 {% else %}
-                <tr id="appsEmptyRow">
-                    <td colspan="4" class="text-center py-4 text-muted">You haven't applied to any drives yet.</td>
-                </tr>
-                {% endif %}
-                
-                <tr id="appsSearchEmpty" style="display:none;">
-                    <td colspan="4" class="text-center py-4 text-muted">
-                        <i class="fas fa-search me-2"></i>No applications match your search.
+                <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">
+                        {% if search_query %}
+                        <i class="fas fa-search me-2 fs-3 d-block mb-3 opacity-25"></i>
+                        No applications match your search: "<strong>{{ search_query }}</strong>"
+                        {% else %}
+                        You haven't applied to any drives yet.
+                        {% endif %}
                     </td>
                 </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 
-<script>
-    (function () {
-        const input = document.getElementById('appsSearch');
-        const clearBtn = document.getElementById('clearAppsSearch');
-        const rows = document.querySelectorAll('.app-row');
-        const emptyRow = document.getElementById('appsSearchEmpty');
-
-        function filterRows() {
-            const q = input.value.trim().toLowerCase();
-            let visible = 0;
-            rows.forEach(row => {
-                const matches = !q || row.dataset.search.includes(q);
-                row.style.display = matches ? '' : 'none';
-                if (matches) visible++;
-            });
-            clearBtn.style.display = q ? 'block' : 'none';
-            // Show "no match" row only when there are actual data rows but none match
-            emptyRow.style.display = (rows.length > 0 && visible === 0 && q) ? '' : 'none';
-        }
-
-        input.addEventListener('input', filterRows);
-        clearBtn.addEventListener('click', function () {
-            input.value = '';
-            filterRows();
-            input.focus();
-        });
-    })();
-</script>
-
-<style>
-    .bg-warning-subtle {
-        background-color: #fffbeb;
-    }
-
-    .bg-info-subtle {
-        background-color: #eff6ff;
-    }
-
-    .bg-danger-subtle {
-        background-color: #fef2f2;
-    }
-
-    #appsSearch:focus {
-        box-shadow: none;
-        border-color: #ced4da;
-    }
-</style>
 {% endblock %}
