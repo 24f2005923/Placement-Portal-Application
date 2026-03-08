@@ -91,11 +91,17 @@ def initiate_recruitment_drive():
     
     existing_drives = PlacementDrive.query.filter_by(company_id=profile.id).order_by(PlacementDrive.created_at.desc()).all()
     
+    # Pre-calculating counts for a cleaner, "moss-safer" template experience
+    approved_count = sum(1 for d in existing_drives if d.approval_status == DriveStatus.APPROVED)
+    pending_count = sum(1 for d in existing_drives if d.approval_status == DriveStatus.PENDING)
+    
     return render_template("company/create_drive.html", 
                            company_name=company_name, 
                            company_id=profile.company_id_field,
                            drive_id=generated_drive_id,
-                           drives=existing_drives)
+                           drives=existing_drives,
+                           approved_count=approved_count,
+                           pending_count=pending_count)
 
 @company_bp.route("/my-drives", endpoint="my_drives")
 @active_account_required

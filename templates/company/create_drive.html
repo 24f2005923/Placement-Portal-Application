@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="container-fluid px-4">
-    
+
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
         </div>
@@ -15,7 +15,7 @@
         </button>
     </div>
 
-<div class="row g-4 mb-5">
+    <div class="row g-4 mb-5">
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 p-4 text-center stats-card">
                 <div class="stats-icon bg-primary-subtle text-primary mb-3 mx-auto">
@@ -31,9 +31,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <span class="text-muted small fw-bold text-uppercase">Approved</span>
-                <h2 class="fw-bold mb-0 mt-1">{{ drives|selectattr('approval_status', 'equalto', 'Approved')|list|length
-                    }}
-                </h2>
+                <h2 class="fw-bold mb-0 mt-1">{{ approved_count }}</h2>
             </div>
         </div>
         <div class="col-md-4">
@@ -42,21 +40,19 @@
                     <i class="fas fa-clock"></i>
                 </div>
                 <span class="text-muted small fw-bold text-uppercase">Pending</span>
-                <h2 class="fw-bold mb-0 mt-1">{{ drives|selectattr('approval_status', 'equalto', 'Pending')|list|length
-                    }}
-                </h2>
+                <h2 class="fw-bold mb-0 mt-1">{{ pending_count }}</h2>
             </div>
         </div>
     </div>
 
-<div class="row g-4">
+    <div class="row g-4">
         {% if drives %}
         {% for drive in drives %}
         <div class="col-12">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden drive-tile">
                 <div class="card-body p-0">
                     <div class="row g-0 align-items-center">
-                        <div class="col-auto h-100 position-absolute start-0 top-0 bottom-0 {% if drive.approval_status == 'Approved' %}bg-success{% elif drive.approval_status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}"
+                        <div class="col-auto h-100 position-absolute start-0 top-0 bottom-0 {% if drive.approval_status.value == 'approved' %}bg-success{% elif drive.approval_status.value == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}"
                             style="width: 6px;"></div>
 
                         <div class="col p-4 ms-2">
@@ -88,8 +84,8 @@
 
                                 <div class="col-md-3 text-end">
                                     <span
-                                        class="status-pill {% if drive.approval_status == 'Approved' %}status-approved{% elif drive.approval_status == 'Rejected' %}status-rejected{% else %}status-pending{% endif %}">
-                                        {{ drive.approval_status }}
+                                        class="status-pill {% if drive.approval_status.value == 'approved' %}status-approved{% elif drive.approval_status.value == 'rejected' %}status-rejected{% else %}status-pending{% endif %}">
+                                        {{ drive.approval_status.value }}
                                     </span>
                                 </div>
                             </div>
