@@ -6,7 +6,6 @@ class CompanyProfile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), unique=True, nullable=False)
-    account = db.relationship("Account", back_populates="company_profile")
 
     name = db.Column(db.String(255), nullable=False)
     company_id_field = db.Column(db.String(100), unique=True, nullable=False) # Matches template

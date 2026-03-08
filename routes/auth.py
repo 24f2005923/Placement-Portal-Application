@@ -211,7 +211,7 @@ def register_hiring_partner():
             flash("Security requirements for password not met.", "danger")
             return redirect(url_for("auth.company_register"))
             
-        if not hr_contact or len(hr_contact) < 3 or not re.match(r"^[A-Za-z\s]+$", hr_contact):
+        if not hr_contact or len(hr_contact) < 3 or not re.match(r"^[A-Za-z\s\.\-']+$", hr_contact):
             flash("HR contact details are invalid.", "danger")
             return redirect(url_for("auth.company_register"))
 

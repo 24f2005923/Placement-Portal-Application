@@ -26,11 +26,9 @@
                             {% for account in students %}
                             <tr>
                                 <td>{{ loop.index }}</td>
-                                <td>{{ account.student_profile[0].university_register_number if account.student_profile
-                                    else
-                                    'N/A' }}</td>
-                                <td>{{ account.student_profile[0].full_name if account.student_profile else 'N/A' }}
-                                </td>
+                                <td>{{ account.student_profile.university_register_number if account.student_profile
+                                    else 'N/A' }}</td>
+                                <td>{{ account.student_profile.full_name if account.student_profile else 'N/A' }}</td>
                                 <td>{{ account.login_identifier }}</td>
                                 <td>
                                     {{ account.account_state | status_badge }}

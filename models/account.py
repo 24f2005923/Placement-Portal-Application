@@ -18,13 +18,13 @@ class Account(db.Model):
         default=AccountState.PENDING_VERIFICATION.value,
     )
 
-    student_profile = db.relationship("StudentProfile", back_populates="account", uselist=False, cascade="all, delete-orphan")
-    company_profile = db.relationship("CompanyProfile", back_populates="account", uselist=False, cascade="all, delete-orphan")
+    student_profile = db.relationship("StudentProfile", backref="account", lazy=True, uselist=False, cascade="all, delete-orphan")
+    company_profile = db.relationship("CompanyProfile", backref="account", lazy=True, uselist=False, cascade="all, delete-orphan")
 
     created_at = db.Column(
         db.DateTime,
         nullable=False,
-        server_default=db.func.now(),
+        default=datetime.now,
     )
     last_login_at = db.Column(db.DateTime, nullable=True)
 
