@@ -70,7 +70,7 @@ def browse_recruitment_drives():
     all_drives = query.order_by(PlacementDrive.id.desc()).all()
     return render_template("admin/drives.html", drives=all_drives, search_query=search_query)
 
-@admin_bp.route("/approve-drive/<int:drive_id>", endpoint="approve_drive")
+@admin_bp.route("/approve-drive/<int:drive_id>", methods=["POST"], endpoint="approve_drive")
 def validate_drive_workflow(drive_id):
     drive = PlacementDrive.query.get_or_404(drive_id)
     drive.approval_status = DriveStatus.APPROVED

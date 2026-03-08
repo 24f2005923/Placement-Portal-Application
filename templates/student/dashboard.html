@@ -156,11 +156,11 @@
         if (!ctx) return;
 
         const data = {
-            applied: {{ status_counts['Applied'] or 0 }
-    },
-        shortlisted: {{ status_counts['Shortlisted'] or 0 }},
-        selected: {{ status_counts['Selected'] or 0 }},
-        rejected: {{ status_counts['Rejected'] or 0 }}
+            applied: {{ status_counts.get('Applied', 0)
+    }},
+        shortlisted: {{ status_counts.get('Shortlisted', 0) }},
+        selected: {{ status_counts.get('Selected', 0) }},
+        rejected: {{ status_counts.get('Rejected', 0) }}
         };
 
     const total = Object.values(data).reduce((a, b) => a + b, 0);
