@@ -1,0 +1,170 @@
+openapi: 3.0.3
+info:
+  title: Placement Portal API
+  version: 1.0.0
+  description: Internal API for managing student applications, drives, and notifications in the Placement Portal.
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+paths:
+  /api/apply/{drive_id}:
+    post:
+      summary: Apply to a Placement Drive
+      description: Allows a student to submit an application for a specific placement drive.
+      tags:
+        - Applications
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the placement drive.
+      responses:
+        '201':
+          description: Application submitted successfully
+        '400':
+          description: Already applied or database constraint error
+        '401':
+          description: Unauthorized (Requires student role)
+        '404':
+          description: Student profile or Drive not found
+
+  /api/applications:
+    get:
+      summary: Get All Applications
+      description: Retrieves a list of all student applications (Admin only).
+      tags:
+        - Applications
+      responses:
+        '200':
+          description: A list of all applications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationResponse'
+        '401':
+          description: Unauthorized (Requires admin role)
+
+  /api/company/applications:
+    get:
+      summary: Get Company Applications
+      description: Retrieves a list of applications specific to the logged-in company.
+      tags:
+        - Applications
+      responses:
+        '200':
+          description: A list of applications for the company's drives
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationResponse'
+        '401':
+          description: Unauthorized (Requires company role)
+        '404':
+          description: Company profile not found
+
+  /api/applications/{app_id}/update-status:
+    post:
+      summary: Update Application Status
+      description: Updates the status of a specific student application and triggers a notification.
+      tags:
+        - Applications
+      parameters:
+        - in: path
+          name: app_id
+          required: true
+          schema:
+            type: integer
+          description: The ID of the application to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: The new status for the application (e.g. Shortlisted, Selected, Rejected).
+      responses:
+        '200':
+          description: Status updated and student notified
+        '400':
+          description: Status parameter is missing
+        '401':
+          description: Unauthorized (Requires admin or matching company role)
+        '404':
+          description: Application not found
+
+  /api/notifications:
+    get:
+      summary: Get Student Notifications
+      description: Retrieves a list of notifications for the logged-in student.
+      tags:
+        - Notifications
+      responses:
+        '200':
+          description: A list of notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationResponse'
+        '401':
+          description: Unauthorized (Requires student role)
+        '404':
+          description: Student profile not found
+
+  /api/notifications/mark-read:
+    post:
+      summary: Mark Notifications as Read
+      description: Marks all unread notifications for the logged-in student as read.
+      tags:
+        - Notifications
+      responses:
+        '200':
+          description: Marked all notifications as read
+        '401':
+          description: Unauthorized (Requires student role)
+
+components:
+  schemas:
+    ApplicationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        student_name:
+          type: string
+        roll_number:
+          type: string
+        drive_title:
+          type: string
+        company_name:
+          type: string
+        status:
+          type: string
+        applied_at:
+          type: string
+          format: date-time
+
+    NotificationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        message:
+          type: string
+        category:
+          type: string
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
