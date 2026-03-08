@@ -42,7 +42,7 @@ def hiring_partner_overview():
     return render_template("company/dashboard.html", company_name=profile.name, 
                            active_drives=active_count, total_apps=total_apps, 
                            pending_review=status_counts['Applied'], hired=status_counts['Selected'], 
-                           status_counts=status_counts, recent_drives=recent)
+                           recent_drives=recent)
 
 @company_bp.route("/create-drive", methods=["GET", "POST"], endpoint="create_drive")
 @active_account_required
