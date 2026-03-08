@@ -19,7 +19,6 @@ def apply_to_drive(drive_id):
     if not drive:
         return jsonify({"message": "Drive not found"}), 404
 
-    # We still check for existing application for a better error message
     existing_application = StudentApplication.query.filter_by(
         student_id=student.id, drive_id=drive_id
     ).first()
@@ -99,7 +98,7 @@ def update_application_status(app_id):
         return jsonify({"message": "Unauthorized"}), 401
 
     data = request.get_json()
-    new_status = data.get("status") # e.g., "Shortlisted", "Selected", "Rejected"
+    new_status = data.get("status")
 
     if not new_status:
         return jsonify({"message": "Status is required"}), 400
@@ -116,12 +115,10 @@ def update_application_status(app_id):
 
     msg = f"Your application for {app.drive.job_title} at {app.drive.company.name} has been updated to '{new_status}'."
     
-    # Map string status to Enum if possible, or use logic for category
     try:
         enum_status = ApplicationStatus[new_status.upper()]
         app.status = enum_status
     except (KeyError, AttributeError):
-        # Fallback if status name doesn't match enum exactly
         pass
 
     category = NotificationType.SUCCESS if new_status == "Selected" else (NotificationType.WARNING if new_status == "Rejected" else NotificationType.INFO)

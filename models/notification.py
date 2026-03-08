@@ -11,7 +11,7 @@ class Notification(db.Model):
         db.Enum(NotificationType),
         nullable=False,
         default=NotificationType.INFO
-    ) # e.g., Success, Warning, Info
+    )
     is_read = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
 

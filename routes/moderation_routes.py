@@ -4,16 +4,14 @@ from datetime import datetime
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-# --- ADMIN ACCESS GUARD ---
+
 @admin_bp.before_request
 def admin_required():
-    # checking if someone is trying to sneak in without proper admin role
     if session.get("role") != "admin":
         return redirect(url_for("auth.admin_login"))
 
 @admin_bp.route("/dashboard", endpoint="dashboard")
 def render_moderation_hub():
-    # just a quick way to get the big numbers for the hub
     counts = {
         "students": Account.query.filter_by(role=AccountRole.STUDENT.value).count(),
         "companies": Account.query.filter_by(role=AccountRole.COMPANY.value).count(),
@@ -24,7 +22,6 @@ def render_moderation_hub():
 
 @admin_bp.route("/students", endpoint="students")
 def list_registered_students():
-    # Fetching students awaiting or already verified
     students = Account.query.filter_by(role=AccountRole.STUDENT.value).all()
     return render_template("admin/students.html", students=students)
 
@@ -32,14 +29,12 @@ def list_registered_students():
 def process_student_verification(account_id, action):
     account = Account.query.get(account_id)
     if account:
-        # Binary state toggle: approve/reject
         account.account_state = AccountState.ACTIVE.value if action == "approve" else AccountState.REJECTED.value
         db.session.commit()
     return redirect(url_for("admin.students"))
 
 @admin_bp.route("/companies", endpoint="companies")
 def list_corporate_partners():
-    # Organization accounts and their active profiles
     accounts = Account.query.filter_by(role=AccountRole.COMPANY.value).all()
     company_profiles = [acc.company_profile for acc in accounts if acc.company_profile]
     return render_template("admin/companies.html", companies=company_profiles)
@@ -48,14 +43,12 @@ def list_corporate_partners():
 def process_company_verification(account_id, action):
     account = Account.query.get(account_id)
     if account:
-        # Handle partner onboarding status
         account.account_state = AccountState.ACTIVE.value if action == "approve" else AccountState.REJECTED.value
         db.session.commit()
     return redirect(url_for("admin.companies"))
 
 @admin_bp.route("/drives", endpoint="drives")
 def browse_recruitment_drives():
-    # Centralized drive management search
     search_query = request.args.get('search', '').strip()
     query = PlacementDrive.query
     
@@ -113,7 +106,6 @@ def inspect_student_applications():
 @admin_bp.route("/blacklisted", endpoint="blacklisted")
 def view_restricted_entities():
     from models import CompanyProfile, StudentProfile
-    # Gathering data for restricted access logs
     rejected_students = Account.query.filter_by(
         role=AccountRole.STUDENT.value, account_state=AccountState.REJECTED.value
     ).all()

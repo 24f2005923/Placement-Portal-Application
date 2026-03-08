@@ -9,9 +9,6 @@ from utils.workflow_utils import secure_password_value, store_registration_entry
 auth_bp = Blueprint("auth", __name__)
 
 
-# ---------------------------------------------------------------------------
-# Internal utility — centralized credential validation
-# ---------------------------------------------------------------------------
 
 def _execute_portal_entry(role_enum, redirect_endpoint):
     """
@@ -20,30 +17,24 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
     identifier = request.form.get("email", "").strip()
     password   = request.form.get("password", "")
 
-    # Lookup account by role and identifier
     account = Account.query.filter_by(
         login_identifier=identifier, role=role_enum.value
     ).first()
 
     if account and check_password_hash(account.password_hash, password):
         account.record_login()
-        finalize_workflow() # Commit login timestamp
+        finalize_workflow()
         session["account_id"] = account.id
-        # Safely package role into session envelope
         session["role"] = account.role.value if hasattr(account.role, 'value') else account.role
         return redirect(url_for(redirect_endpoint))
 
     return None
 
 
-# ---------------------------------------------------------------------------
-# Candidate onboarding workflow
-# ---------------------------------------------------------------------------
 
 @auth_bp.route("/student/register", methods=["GET", "POST"], endpoint="student_register")
 def initiate_student_onboarding():
     if request.method == "POST":
-        # extract candidate payload
         institutional_email = request.form.get("college_email", "").strip()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
@@ -56,7 +47,6 @@ def initiate_student_onboarding():
         primary_phone = request.form.get("mobile", "").strip()
         secondary_phone = request.form.get("alt_mobile", "").strip()
 
-        # Input validation logic
         if not full_name or len(full_name) < 3 or not re.match(r"^[A-Za-z\s]+$", full_name):
             flash("Invalid full name provided.", "danger")
             return redirect(url_for("auth.student_register"))
@@ -104,7 +94,6 @@ def initiate_student_onboarding():
             return redirect(url_for("auth.student_register"))
 
         try:
-            # Create master account using helper
             account = Account(
                 login_identifier=institutional_email,
                 password_hash=secure_password_value(password),
@@ -113,7 +102,6 @@ def initiate_student_onboarding():
             )
             store_registration_entry(account)
 
-            # Create specific candidate profile
             profile = StudentProfile(
                 account_id=account.id,
                 full_name=full_name,
@@ -126,7 +114,7 @@ def initiate_student_onboarding():
                 secondary_phone=secondary_phone
             )
             store_registration_entry(profile)
-            finalize_workflow() # Commit everything
+            finalize_workflow()
 
             flash("Success! Awaiting verification.", "success")
             return redirect(url_for("auth.student_login"))
@@ -139,21 +127,14 @@ def initiate_student_onboarding():
     return render_template("auth/student_register.html")
 
 
-# ---------------------------------------------------------------------------
-# Session termination
-# ---------------------------------------------------------------------------
 
 @auth_bp.route("/logout", endpoint="logout")
 def terminate_session():
-    # Clearing user environment
     session.clear()
     flash("You have been signed out.", "success")
     return redirect(url_for("main.index"))
 
 
-# ---------------------------------------------------------------------------
-# Portal Access Controllers
-# ---------------------------------------------------------------------------
 
 @auth_bp.route("/admin/login", methods=["GET", "POST"], endpoint="admin_login")
 def access_moderation_portal():
@@ -182,14 +163,10 @@ def access_organization_panel():
     return render_template("auth/company_login.html")
 
 
-# ---------------------------------------------------------------------------
-# Hiring partner registration
-# ---------------------------------------------------------------------------
 
 @auth_bp.route("/company/register", methods=["GET", "POST"], endpoint="company_register")
 def register_hiring_partner():
     if request.method == "POST":
-        # organization metadata extraction
         company_name  = request.form.get("company_name", "").strip()
         registration_id = request.form.get("company_id_field", "").strip()
         website       = request.form.get("website", "").strip()
@@ -224,7 +201,6 @@ def register_hiring_partner():
             return redirect(url_for("auth.company_register"))
 
         try:
-            # master record creation
             account = Account(
                 login_identifier=work_email,
                 password_hash=secure_password_value(password),
@@ -233,7 +209,6 @@ def register_hiring_partner():
             )
             store_registration_entry(account)
 
-            # partner profile creation
             profile = CompanyProfile(
                 account_id=account.id,
                 name=company_name,

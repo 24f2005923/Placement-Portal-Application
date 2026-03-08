@@ -6,7 +6,7 @@ class PlacementDrive(db.Model):
     __tablename__ = "placement_drives"
 
     id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.Integer, db.ForeignKey("company_profiles.id"), nullable=False) # Store company ID from session
+    company_id = db.Column(db.Integer, db.ForeignKey("company_profiles.id"), nullable=False)
     
     company = db.relationship("CompanyProfile")
     job_title = db.Column(db.String(200), nullable=False)

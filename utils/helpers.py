@@ -30,17 +30,14 @@ def get_current_company_profile():
 
 
 def format_drive_date(value):
-    # organic date formatting for drive deadlines
     if not value:
         return "N/A"
     return value.strftime('%d %b, %Y')
 
 def status_badge(status):
-    # dynamic component for consistent status visualization
     if not status:
         return Markup('<span class="badge bg-light text-muted border rounded-pill">Unknown</span>')
     
-    # support both Enum and string, normalizing underscores
     status_str = str(status.value) if hasattr(status, 'value') else str(status)
     normalized = status_str.replace('_', ' ').title()
     

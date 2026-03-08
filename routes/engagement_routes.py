@@ -11,7 +11,6 @@ student_bp = Blueprint("student", __name__, url_prefix="/student")
 
 @student_bp.before_request
 def student_required():
-    # checking if it's actually a student session and not someone trying to bypass
     if session.get("role") != "student":
         return redirect(url_for("auth.student_login"))
 
@@ -28,7 +27,6 @@ def engagement_portal_main():
     
     if profile:
         current_time = datetime.now()
-        # fetch recently approved drives for candidates
         latest_drives = PlacementDrive.query.filter(
             PlacementDrive.approval_status == DriveStatus.APPROVED,
             PlacementDrive.application_deadline >= current_time
@@ -47,7 +45,6 @@ def engagement_portal_main():
         
         applied_drive_ids = [app.drive_id for app in StudentApplication.query.filter_by(student_id=profile.id).all()]
         
-        # quick status calculation for personal metrics
         status_counts = {
             'Applied': StudentApplication.query.filter_by(student_id=profile.id, status=ApplicationStatus.APPLIED).count(),
             'Shortlisted': StudentApplication.query.filter_by(student_id=profile.id, status=ApplicationStatus.SHORTLISTED).count(),
@@ -73,7 +70,6 @@ def manage_candidate_profile():
     
     if request.method == "POST":
         if profile:
-            # persisting candidate updates
             profile.full_name = request.form.get("name")
             profile.personal_email = request.form.get("personal_email")
             profile.primary_phone = request.form.get("mobile")

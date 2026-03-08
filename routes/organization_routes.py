@@ -9,14 +9,12 @@ import string
 company_bp = Blueprint("company", __name__, url_prefix="/company")
 
 def generate_drive_id():
-    # helper to build a unique drive identifier
     date_str = datetime.now().strftime("%Y%m%d")
     random_str = ''.join(random.choices(string.ascii_uppercase + string.digits, k=4))
     return f"DRV-{date_str}-{random_str}"
 
 @company_bp.before_request
 def company_required():
-    # gotta make sure it's a company user and not some random student or admin
     if session.get("role") != "company":
         return redirect(url_for("auth.company_login"))
 
@@ -29,11 +27,9 @@ def hiring_partner_overview():
     drives = PlacementDrive.query.filter_by(company_id=profile.id).all()
     drive_ids = [d.id for d in drives]
     
-    # temporary guard for empty drives
     active_count = PlacementDrive.query.filter_by(company_id=profile.id, approval_status=DriveStatus.APPROVED).count()
     total_apps = StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids)).count() if drive_ids else 0
     
-    # status tracking breakdown
     status_counts = {
         'Applied': StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == ApplicationStatus.APPLIED).count() if drive_ids else 0,
         'Shortlisted': StudentApplication.query.filter(StudentApplication.drive_id.in_(drive_ids), StudentApplication.status == ApplicationStatus.SHORTLISTED).count() if drive_ids else 0,
@@ -59,7 +55,6 @@ def initiate_recruitment_drive():
 
     if request.method == "POST":
         try:
-            # persisting drive details to the catalog
             job_title = request.form.get("job_title") 
             job_description = request.form.get("job_description")
             eligibility = request.form.get("eligibility_criteria") 
@@ -91,7 +86,6 @@ def initiate_recruitment_drive():
     
     existing_drives = PlacementDrive.query.filter_by(company_id=profile.id).order_by(PlacementDrive.created_at.desc()).all()
     
-    # Pre-calculating counts for a cleaner, "moss-safer" template experience
     approved_count = sum(1 for d in existing_drives if d.approval_status == DriveStatus.APPROVED)
     pending_count = sum(1 for d in existing_drives if d.approval_status == DriveStatus.PENDING)
     

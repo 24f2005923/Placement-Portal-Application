@@ -17,7 +17,7 @@ class StudentApplication(db.Model):
         default=ApplicationStatus.APPLIED
     )
     applied_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, nullable=True, onupdate=db.func.now()) # For future stage updates
+    updated_at = db.Column(db.DateTime, nullable=True, onupdate=db.func.now())
     
     student = db.relationship("StudentProfile", backref=db.backref("student_applications", lazy=True))
     drive = db.relationship("PlacementDrive", backref=db.backref("job_applications", lazy=True))

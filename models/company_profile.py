@@ -8,7 +8,7 @@ class CompanyProfile(db.Model):
     account_id = db.Column(db.Integer, db.ForeignKey("accounts.id"), unique=True, nullable=False)
 
     name = db.Column(db.String(255), nullable=False)
-    company_id_field = db.Column(db.String(100), unique=True, nullable=False) # Matches template
+    company_id_field = db.Column(db.String(100), unique=True, nullable=False)
     website_url = db.Column(db.String(255), nullable=True)
     industry_type = db.Column(db.String(255), nullable=True)
     location = db.Column(db.String(255), nullable=True)
