@@ -271,11 +271,19 @@ def view_student_resume(student_id):
         flash("You can only view resumes of students shortlisted for your drives.", "warning")
         return redirect(url_for("company.shortlisted_students"))
     
+    from flask import current_app
+    
     student = StudentProfile.query.get_or_404(student_id)
     if not student.cv_filename:
         flash("Resume not uploaded by student.", "info")
         return redirect(url_for("company.shortlisted_students"))
     
-    # Serve file from static/uploads/resumes
-    resume_path = os.path.join("static", "uploads", "resumes")
-    return send_from_directory(resume_path, student.cv_filename)
+    # Serve file from configured upload folder
+    upload_dir = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
+    
+    # Check if file exists on disk
+    if not os.path.exists(os.path.join(upload_dir, student.cv_filename)):
+        flash(f"Resume file '{student.cv_filename}' not found on server. Please contact the student.", "danger")
+        return redirect(url_for("company.shortlisted_students"))
+        
+    return send_from_directory(upload_dir, student.cv_filename)

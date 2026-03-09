@@ -82,7 +82,7 @@ def manage_candidate_profile():
                 allowed = {"pdf", "doc", "docx"}
                 ext = cv_file.filename.rsplit(".", 1)[-1].lower()
                 if ext in allowed:
-                    upload_dir = os.path.join(current_app.root_path, "static", "uploads", "cvs")
+                    upload_dir = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
                     os.makedirs(upload_dir, exist_ok=True)
                     filename = secure_filename(f"cv_{profile.id}.{ext}")
                     cv_file.save(os.path.join(upload_dir, filename))

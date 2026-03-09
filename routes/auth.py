@@ -129,7 +129,7 @@ def initiate_student_onboarding():
                     resume_file.seek(0)
                     
                     if file_size <= 5 * 1024 * 1024:
-                        upload_dir = os.path.join(current_app.root_path, "static", "uploads", "resumes")
+                        upload_dir = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
                         os.makedirs(upload_dir, exist_ok=True)
                         filename = secure_filename(f"resume_{university_reg_no}.{ext}")
                         resume_file.save(os.path.join(upload_dir, filename))

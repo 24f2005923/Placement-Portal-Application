@@ -7,6 +7,7 @@ from utils.helpers import init_filters
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'placement_secret_key'
+    app.config['UPLOAD_FOLDER'] = 'static/uploads/cvs'
 
     configure_db(app)
     db.init_app(app)
