@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, session, flash, request
-from models import Account, AccountRole, AccountState, PlacementDrive, StudentApplication, db, DriveStatus, ApplicationStatus
+from models import Account, AccountRole, AccountState, PlacementDrive, StudentApplication, db, DriveStatus, ApplicationStatus, BlacklistEntry, StudentProfile, CompanyProfile
 from datetime import datetime
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -22,8 +22,22 @@ def render_moderation_hub():
 
 @admin_bp.route("/students", endpoint="students")
 def list_registered_students():
-    students = Account.query.filter_by(role=AccountRole.STUDENT.value).all()
-    return render_template("admin/students.html", students=students)
+    search_query = request.args.get('q', '').strip()
+    query = Account.query.filter_by(role=AccountRole.STUDENT.value)
+    
+    if search_query:
+        from models import StudentProfile
+        query = query.join(StudentProfile).filter(
+            db.or_(
+                StudentProfile.full_name.ilike(f"%{search_query}%"),
+                StudentProfile.university_register_number.ilike(f"%{search_query}%"),
+                StudentProfile.institutional_email.ilike(f"%{search_query}%"),
+                Account.login_identifier.ilike(f"%{search_query}%")
+            )
+        )
+    
+    students = query.all()
+    return render_template("admin/students.html", students=students, search_query=search_query)
 
 @admin_bp.route("/students/verify/<int:account_id>/<action>", methods=["POST"], endpoint="verify_student")
 def process_student_verification(account_id, action):
@@ -35,9 +49,21 @@ def process_student_verification(account_id, action):
 
 @admin_bp.route("/companies", endpoint="companies")
 def list_corporate_partners():
-    accounts = Account.query.filter_by(role=AccountRole.COMPANY.value).all()
-    company_profiles = [acc.company_profile for acc in accounts if acc.company_profile]
-    return render_template("admin/companies.html", companies=company_profiles)
+    search_query = request.args.get('q', '').strip()
+    from models import CompanyProfile
+    query = CompanyProfile.query.join(Account).filter(Account.role == AccountRole.COMPANY.value)
+    
+    if search_query:
+        query = query.filter(
+            db.or_(
+                CompanyProfile.name.ilike(f"%{search_query}%"),
+                CompanyProfile.work_email.ilike(f"%{search_query}%"),
+                CompanyProfile.industry_type.ilike(f"%{search_query}%")
+            )
+        )
+    
+    company_profiles = query.all()
+    return render_template("admin/companies.html", companies=company_profiles, search_query=search_query)
 
 @admin_bp.route("/companies/verify/<int:account_id>/<action>", methods=["POST"], endpoint="verify_company")
 def process_company_verification(account_id, action):
@@ -105,7 +131,30 @@ def inspect_student_applications():
 
 @admin_bp.route("/blacklisted", endpoint="blacklisted")
 def view_restricted_entities():
-    from models import CompanyProfile, StudentProfile
+    # Filter by type if provided
+    filter_type = request.args.get('type')
+    query = BlacklistEntry.query
+    if filter_type:
+        query = query.filter_by(entity_type=filter_type)
+    
+    blacklisted_items = query.order_by(BlacklistEntry.blacklisted_at.desc()).all()
+    
+    # Enrich blacklisted items with names/identifiers
+    for item in blacklisted_items:
+        item.display_name = "Unknown"
+        if item.entity_type == 'student':
+            student = StudentProfile.query.get(item.entity_id)
+            if student: item.display_name = student.full_name
+        elif item.entity_type == 'company':
+            company = CompanyProfile.query.get(item.entity_id)
+            if company: item.display_name = company.name
+        elif item.entity_type == 'drive':
+            drive = PlacementDrive.query.get(item.entity_id)
+            if drive: item.display_name = drive.job_title
+        elif item.entity_type == 'application':
+            app = StudentApplication.query.get(item.entity_id)
+            if app: item.display_name = f"{app.student.full_name} - {app.drive.job_title}"
+
     rejected_students = Account.query.filter_by(
         role=AccountRole.STUDENT.value, account_state=AccountState.REJECTED.value
     ).all()
@@ -118,8 +167,40 @@ def view_restricted_entities():
 
     return render_template(
         "admin/blacklisted.html",
+        blacklisted_items=blacklisted_items,
         rejected_students=rejected_students,
         rejected_companies=rejected_companies,
         rejected_drives=rejected_drives,
-        rejected_apps=rejected_apps
+        rejected_apps=rejected_apps,
+        filter_type=filter_type
     )
+
+@admin_bp.route("/blacklist/<entity_type>/<int:entity_id>", methods=["POST"], endpoint="blacklist_entity")
+def blacklist_entity(entity_type, entity_id):
+    reason = request.form.get("reason", "No reason provided")
+    admin_id = session.get("account_id") # Fixed from user_id to account_id
+    
+    # Check if already blacklisted
+    existing = BlacklistEntry.query.filter_by(entity_type=entity_type, entity_id=entity_id).first()
+    if existing:
+        flash(f"This {entity_type} is already blacklisted.", "warning")
+    else:
+        new_entry = BlacklistEntry(
+            entity_type=entity_type,
+            entity_id=entity_id,
+            reason=reason,
+            admin_id=admin_id
+        )
+        db.session.add(new_entry)
+        db.session.commit()
+        flash(f"{entity_type.capitalize()} has been blacklisted.", "danger")
+        
+    return redirect(url_for("admin.blacklisted"))
+
+@admin_bp.route("/unblacklist/<int:entry_id>", methods=["POST"], endpoint="unblacklist_entity")
+def unblacklist_entity(entry_id):
+    entry = BlacklistEntry.query.get_or_404(entry_id)
+    db.session.delete(entry)
+    db.session.commit()
+    flash("Entity has been restored from blacklist.", "success")
+    return redirect(url_for("admin.blacklisted"))

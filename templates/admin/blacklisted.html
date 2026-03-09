@@ -4,7 +4,89 @@
 
 {% block content %}
 <div class="container-fluid">
-    <h4 class="fw-bold mb-4"><i class="fas fa-ban me-2 text-danger"></i>Blacklisted & Rejected</h4>
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h4 class="fw-bold mb-0"><i class="fas fa-ban me-2 text-danger"></i>Blacklisted Entities</h4>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle rounded-pill" type="button"
+                    data-bs-toggle="dropdown">
+                    <i class="fas fa-filter me-1"></i> Filter: {{ filter_type.capitalize() if filter_type else 'All
+                    Types' }}
+                </button>
+                <ul class="dropdown-menu shadow border-0">
+                    <li><a class="dropdown-item" href="{{ url_for('admin.blacklisted') }}">All Types</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.blacklisted', type='student') }}">Students</a>
+                    </li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.blacklisted', type='company') }}">Companies</a>
+                    </li>
+                    <li><a class="dropdown-item" href="{{ url_for('admin.blacklisted', type='drive') }}">Drives</a></li>
+                    <li><a class="dropdown-item"
+                            href="{{ url_for('admin.blacklisted', type='application') }}">Applications</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Blacklist Table -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
+        <div class="card-header bg-danger text-white py-3 border-0">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-shield-virus me-2"></i>
+                <h6 class="fw-bold mb-0">Active Blacklist Registry</h6>
+                <span class="badge bg-white text-danger ms-auto rounded-pill px-3">{{ blacklisted_items|length }}</span>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Type</th>
+                        <th>Identifier / Name</th>
+                        <th>Date Added</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in blacklisted_items %}
+                    <tr>
+                        <td class="ps-4">
+                            <span class="badge bg-dark rounded-pill px-3">{{ entry.entity_type.capitalize() }}</span>
+                        </td>
+                        <td class="fw-bold">{{ entry.display_name }}</td>
+                        <td>
+                            <div class="small fw-bold">{{ entry.blacklisted_at.strftime('%d %b %Y, %H:%M') }}</div>
+                            <small class="text-muted">by Admin #{{ entry.admin_id }}</small>
+                        </td>
+                        <td class="text-end pe-4">
+                            <form action="{{ url_for('admin.unblacklist_entity', entry_id=entry.id) }}" method="POST"
+                                class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3"
+                                    onclick="return confirm('Restore this entity from the blacklist?')">
+                                    <i class="fas fa-undo me-1"></i> Restore
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            <i class="fas fa-check-circle fs-1 opacity-25 mb-3 d-block"></i>
+                            No active blacklist entries found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr class="my-5">
+    <h5 class="fw-bold mb-4 opacity-75">Legacy Rejected Archives</h5>
 
     <div class="card mb-4">
         <div class="card-header bg-transparent border-0 d-flex align-items-center gap-2">

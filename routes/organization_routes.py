@@ -94,9 +94,72 @@ def initiate_recruitment_drive():
                            company_name=company_name, 
                            company_id=profile.company_id_field,
                            drive_id=generated_drive_id,
-                           drives=existing_drives,
+                            drives=existing_drives,
                            approved_count=approved_count,
                            pending_count=pending_count)
+
+@company_bp.route("/drives/<int:drive_id>/edit", methods=["GET", "POST"], endpoint="edit_drive")
+@active_account_required
+def edit_recruitment_drive(drive_id):
+    profile = get_current_company_profile()
+    if not profile:
+        return redirect(url_for("auth.company_login"))
+    
+    drive = PlacementDrive.query.get_or_404(drive_id)
+    
+    # Security: Ensure company owns the drive
+    if drive.company_id != profile.id:
+        flash("Unauthorized access to edit this drive.", "danger")
+        return redirect(url_for("company.create_drive"))
+    
+    if request.method == "POST":
+        try:
+            drive.job_title = request.form.get("job_title")
+            drive.job_description = request.form.get("job_description")
+            drive.eligibility_criteria = request.form.get("eligibility_criteria")
+            drive.job_location = request.form.get("job_location") or "On-Site"
+            drive.package_amount = request.form.get("package_amount")
+            deadline_str = request.form.get("application_deadline")
+            if deadline_str:
+                drive.application_deadline = datetime.strptime(deadline_str, '%Y-%m-%d')
+            
+            # Reset approval status to pending after edit if needed (optional)
+            # drive.approval_status = DriveStatus.PENDING
+            
+            db.session.commit()
+            flash("Drive details updated successfully.", "success")
+            return redirect(url_for("company.create_drive"))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error updating drive: {str(e)}", "danger")
+    
+    return render_template("company/edit_drive.html", 
+                           company_name=profile.name, 
+                           drive=drive)
+
+@company_bp.route("/drives/<int:drive_id>/delete", methods=["POST"], endpoint="delete_drive")
+@active_account_required
+def remove_recruitment_drive(drive_id):
+    profile = get_current_company_profile()
+    if not profile:
+        return redirect(url_for("auth.company_login"))
+    
+    drive = PlacementDrive.query.get_or_404(drive_id)
+    
+    # Security checking
+    if drive.company_id != profile.id:
+        flash("Unauthorized access to delete this drive.", "danger")
+        return redirect(url_for("company.create_drive"))
+    
+    try:
+        db.session.delete(drive)
+        db.session.commit()
+        flash("Placement drive has been removed.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting drive: {str(e)}", "danger")
+        
+    return redirect(url_for("company.create_drive"))
 
 @company_bp.route("/my-drives", endpoint="my_drives")
 @active_account_required

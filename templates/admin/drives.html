@@ -104,6 +104,14 @@
                             {% else %}
                             <span class="text-muted small font-italic opacity-50">Processed</span>
                             {% endif %}
+                            <form
+                                action="{{ url_for('admin.blacklist_entity', entity_type='drive', entity_id=drive.id) }}"
+                                method="POST" class="d-inline ms-2">
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Blacklist"
+                                    onclick="return confirm('Are you sure you want to blacklist this drive?')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% else %}

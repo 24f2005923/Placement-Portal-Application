@@ -9,6 +9,21 @@
             <h2><i class="fas fa-building me-2"></i>Companies Management</h2>
 
             <hr>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form action="{{ url_for('admin.companies') }}" method="GET" class="d-flex">
+                        <input type="text" name="q" class="form-control me-2"
+                            placeholder="Search companies by name, email, or industry..."
+                            value="{{ search_query or '' }}">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                        {% if search_query %}
+                        <a href="{{ url_for('admin.companies') }}" class="btn btn-secondary ms-2">Clear</a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
             <div class="portal-panel mt-3">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -46,16 +61,30 @@
                                         <form
                                             action="{{ url_for('admin.verify_company', account_id=company.account.id, action='reject') }}"
                                             method="POST" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Reject"><i
-                                                    class="fas fa-times"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Reject"><i class="fas fa-times"></i></button>
                                         </form>
                                         {% endif %}
+                                        <form
+                                            action="{{ url_for('admin.blacklist_entity', entity_type='company', entity_id=company.id) }}"
+                                            method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Blacklist"
+                                                onclick="return confirm('Are you sure you want to blacklist this company?')">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="7" class="text-center">No companies found.</td>
+                                <td colspan="7" class="text-center">
+                                    {% if search_query %}
+                                    No matching records found for "{{ search_query }}".
+                                    {% else %}
+                                    No companies found.
+                                    {% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

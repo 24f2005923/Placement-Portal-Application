@@ -20,7 +20,7 @@ class StudentApplication(db.Model):
     updated_at = db.Column(db.DateTime, nullable=True, onupdate=db.func.now())
     
     student = db.relationship("StudentProfile", backref=db.backref("student_applications", lazy=True))
-    drive = db.relationship("PlacementDrive", backref=db.backref("job_applications", lazy=True))
+    drive = db.relationship("PlacementDrive", backref=db.backref("job_applications", lazy=True, cascade="all, delete-orphan"))
 
     def __repr__(self):
         return f"<StudentApplication {self.student_id} -> {self.drive_id}>"

@@ -9,6 +9,20 @@
             <h2><i class="fas fa-users me-2"></i>Students Management</h2>
 
             <hr>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <form action="{{ url_for('admin.students') }}" method="GET" class="d-flex">
+                        <input type="text" name="q" class="form-control me-2"
+                            placeholder="Search students by name, reg no, or email..." value="{{ search_query or '' }}">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                        {% if search_query %}
+                        <a href="{{ url_for('admin.students') }}" class="btn btn-secondary ms-2">Clear</a>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
             <div class="portal-panel mt-3">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -45,16 +59,30 @@
                                         <form
                                             action="{{ url_for('admin.verify_student', account_id=account.id, action='reject') }}"
                                             method="POST" class="d-inline">
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Reject"><i
-                                                    class="fas fa-times"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                title="Reject"><i class="fas fa-times"></i></button>
                                         </form>
                                         {% endif %}
+                                        <form
+                                            action="{{ url_for('admin.blacklist_entity', entity_type='student', entity_id=account.student_profile.id if account.student_profile else account.id) }}"
+                                            method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Blacklist"
+                                                onclick="return confirm('Are you sure you want to blacklist this student?')">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="6" class="text-center">No students found.</td>
+                                <td colspan="6" class="text-center">
+                                    {% if search_query %}
+                                    No matching records found for "{{ search_query }}".
+                                    {% else %}
+                                    No students found.
+                                    {% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>

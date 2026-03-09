@@ -70,6 +70,14 @@
                                 <button class="btn btn-outline-danger px-3 update-status" data-id="{{ app.id }}"
                                     data-status="Rejected">Reject</button>
                             </div>
+                            <form
+                                action="{{ url_for('admin.blacklist_entity', entity_type='application', entity_id=app.id) }}"
+                                method="POST" class="d-inline ms-2">
+                                <button type="submit" class="btn btn-sm btn-danger px-2" title="Blacklist"
+                                    onclick="return confirm('Are you sure you want to blacklist this application?')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% else %}
