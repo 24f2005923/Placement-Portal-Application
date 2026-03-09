@@ -24,7 +24,7 @@
                     {% endif %}
                     {% endwith %}
 
-                    <form method="POST" class="needs-validation" novalidate>
+                    <form method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
                         <div class="row g-4">
 
                             <div class="col-12">
@@ -112,7 +112,23 @@
                                     required>
                             </div>
 
-                            <div class="col-12 mt-5">
+                            <div class="col-12 mt-4">
+                                <h5 class="fw-bold text-primary mb-3">Documents</h5>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-600">Upload Resume <span class="text-muted small">(PDF or
+                                        DOCX format recommended)</span></label>
+                                <div class="input-group">
+                                    <input type="file" name="resume"
+                                        class="form-control rounded-pill bg-light border-0 px-4 py-3"
+                                        accept=".pdf,.doc,.docx">
+                                </div>
+                                <div class="form-text ms-3">Max size 5MB. You can also upload this later in your
+                                    profile.</div>
+                            </div>
+
+                            <div class="col-12 mt-4">
                                 <button type="submit"
                                     class="btn btn-primary-custom w-100 py-3 rounded-pill fw-bold fs-5">Create Student
                                     Account</button>

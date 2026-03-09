@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, redirect, url_for, session, request, flash
+from flask import Blueprint, render_template, redirect, url_for, session, request, flash, send_from_directory
 from utils.decorators import active_account_required
 from utils.helpers import get_current_company_profile
-from models import CompanyProfile, PlacementDrive, StudentApplication, db, DriveStatus, ApplicationStatus
+from models import CompanyProfile, PlacementDrive, StudentApplication, db, DriveStatus, ApplicationStatus, StudentProfile
+import os
 from datetime import datetime
 import random
 import string
@@ -183,3 +184,35 @@ def manage_organization_profile():
     
     company_name = profile.name if profile else "Company User"
     return render_template("company/profile.html", company_name=company_name, company=company_data)
+@company_bp.route("/student/<int:student_id>/resume", endpoint="view_resume")
+@active_account_required
+def view_student_resume(student_id):
+    profile = get_current_company_profile()
+    if not profile:
+        return redirect(url_for("auth.company_login"))
+    
+    # Security check: Ensure company has access to this student's resume
+    # Check if student is shortlisted for any of this company's drives
+    drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
+    if not drive_ids:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("company.dashboard"))
+    
+    is_shortlisted = StudentApplication.query.filter(
+        StudentApplication.student_id == student_id,
+        StudentApplication.drive_id.in_(drive_ids),
+        StudentApplication.status == ApplicationStatus.SHORTLISTED
+    ).first()
+    
+    if not is_shortlisted:
+        flash("You can only view resumes of students shortlisted for your drives.", "warning")
+        return redirect(url_for("company.shortlisted_students"))
+    
+    student = StudentProfile.query.get_or_404(student_id)
+    if not student.cv_filename:
+        flash("Resume not uploaded by student.", "info")
+        return redirect(url_for("company.shortlisted_students"))
+    
+    # Serve file from static/uploads/resumes
+    resume_path = os.path.join("static", "uploads", "resumes")
+    return send_from_directory(resume_path, student.cv_filename)

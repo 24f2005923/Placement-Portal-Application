@@ -120,8 +120,7 @@ def search_career_opportunities():
     
     current_time = datetime.now()
     query = PlacementDrive.query.filter(
-        PlacementDrive.approval_status == DriveStatus.APPROVED,
-        PlacementDrive.application_deadline >= current_time
+        PlacementDrive.approval_status == DriveStatus.APPROVED
     )
 
     if search_query:
@@ -142,7 +141,8 @@ def search_career_opportunities():
         applied_drive_ids = [app.drive_id for app in StudentApplication.query.filter_by(student_id=profile.id).all()]
     
     return render_template("student/view_drives.html", drives=drives, student_name=student_name, 
-                           applied_drive_ids=applied_drive_ids, search_query=search_query)
+                           applied_drive_ids=applied_drive_ids, search_query=search_query,
+                           current_time=current_time)
 
 
 @student_bp.route("/applications", endpoint="applications")

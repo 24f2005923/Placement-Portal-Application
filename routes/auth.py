@@ -4,6 +4,9 @@ from database import db
 from models import Account, StudentProfile, CompanyProfile, AccountRole, AccountState
 from datetime import datetime
 import re
+import os
+from flask import current_app
+from werkzeug.utils import secure_filename
 from utils.workflow_utils import secure_password_value, store_registration_entry, finalize_workflow
 
 auth_bp = Blueprint("auth", __name__)
@@ -113,6 +116,29 @@ def initiate_student_onboarding():
                 primary_phone=primary_phone,
                 secondary_phone=secondary_phone
             )
+            
+            # Handle Resume Upload
+            resume_file = request.files.get("resume")
+            if resume_file and resume_file.filename:
+                allowed_ext = {"pdf", "doc", "docx"}
+                ext = resume_file.filename.rsplit(".", 1)[-1].lower()
+                if ext in allowed_ext:
+                    # Check file size (5MB limit)
+                    resume_file.seek(0, os.SEEK_END)
+                    file_size = resume_file.tell()
+                    resume_file.seek(0)
+                    
+                    if file_size <= 5 * 1024 * 1024:
+                        upload_dir = os.path.join(current_app.root_path, "static", "uploads", "resumes")
+                        os.makedirs(upload_dir, exist_ok=True)
+                        filename = secure_filename(f"resume_{university_reg_no}.{ext}")
+                        resume_file.save(os.path.join(upload_dir, filename))
+                        profile.cv_filename = filename
+                    else:
+                        flash("Resume file size exceeds 5MB limit.", "warning")
+                else:
+                    flash("Invalid file format for resume. Only PDF/DOC/DOCX allowed.", "warning")
+            
             store_registration_entry(profile)
             finalize_workflow()
 
