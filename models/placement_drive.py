@@ -23,8 +23,8 @@ class PlacementDrive(db.Model):
         default=DriveStatus.PENDING
     )
     
-    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    approved_at = db.Column(db.DateTime, nullable=True, onupdate=db.func.now())
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    approved_at = db.Column(db.DateTime, nullable=True, onupdate=datetime.utcnow)
     rejection_reason = db.Column(db.String(500), nullable=True)
 
     def __repr__(self):

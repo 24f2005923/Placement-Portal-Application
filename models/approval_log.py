@@ -15,8 +15,7 @@ class ApprovalLog(db.Model):
     timestamp = db.Column(
         db.DateTime, 
         nullable=False, 
-        server_default=db.func.now()
-    )
+        default=datetime.utcnow )
 
     def __repr__(self) -> str:
         return f"<ApprovalLog account={self.account_id} transition={self.previous_state}->{self.new_state}>"

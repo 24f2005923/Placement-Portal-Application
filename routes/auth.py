@@ -28,6 +28,10 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
             print(f"DEBUG: Denied due to account state: {account_state}")
             flash("Your account has been restricted. Please contact the administrator.", "danger")
             return redirect(url_for(request.endpoint))
+        elif account_state == AccountState.PENDING_VERIFICATION.value.lower():
+            print(f"DEBUG: Denied due to pending verification")
+            flash("Your account is pending verification. Please wait for admin approval.", "warning")
+            return redirect(url_for(request.endpoint))
 
         blacklisted = False
         if role_enum == AccountRole.STUDENT and account.student_profile:

@@ -1,3 +1,4 @@
+from datetime import datetime
 from database import db
 from models.enums import ApplicationStatus
 
@@ -16,8 +17,8 @@ class StudentApplication(db.Model):
         nullable=False,
         default=ApplicationStatus.APPLIED
     )
-    applied_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
-    updated_at = db.Column(db.DateTime, nullable=True, onupdate=db.func.now())
+    applied_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, nullable=True, onupdate=datetime.utcnow)
     
     student = db.relationship("StudentProfile", backref=db.backref("student_applications", lazy=True))
     drive = db.relationship("PlacementDrive", backref=db.backref("job_applications", lazy=True, cascade="all, delete-orphan"))

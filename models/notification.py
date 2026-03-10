@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from database import db
 from models.enums import NotificationType
 
@@ -13,7 +15,7 @@ class Notification(db.Model):
         default=NotificationType.INFO
     )
     is_read = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, nullable=False, server_default=db.func.now())
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     student = db.relationship("StudentProfile", backref=db.backref("notifications", lazy=True))
 
