@@ -14,9 +14,6 @@ auth_bp = Blueprint("auth", __name__)
 
 
 def _execute_portal_entry(role_enum, redirect_endpoint):
-    """
-    Validates user credentials and prepares the session for the specific role.
-    """
     identifier = request.form.get("email", "").strip()
     password   = request.form.get("password", "")
 
@@ -25,7 +22,6 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
     ).first()
 
     if account and check_password_hash(account.password_hash, password):
-        # Prevent login for restricted account states
         account_state = (account.account_state or "").lower()
         print(f"DEBUG: Login for {identifier}, Role: {role_enum}, State: {account_state}")
         if account_state in [AccountState.REJECTED.value.lower(), AccountState.SUSPENDED.value.lower()]:
@@ -33,7 +29,6 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
             flash("Your account has been restricted. Please contact the administrator.", "danger")
             return redirect(url_for(request.endpoint))
 
-        # Check for blacklisted status
         blacklisted = False
         if role_enum == AccountRole.STUDENT and account.student_profile:
             blacklisted = BlacklistEntry.query.filter_by(
@@ -48,7 +43,6 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
             ).first() is not None
             if blacklisted: print(f"DEBUG: Denied due to company blacklist")
             
-            # Additional check for company approval status
             if not blacklisted:
                 approval_status = getattr(account.company_profile.approval_status, 'value', account.company_profile.approval_status)
                 print(f"DEBUG: Company approval status: {approval_status}")
@@ -61,15 +55,13 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
             return redirect(url_for(request.endpoint))
 
         account.record_login()
-        db.session.commit() # Ensure last_login_at is saved
+        db.session.commit() 
         finalize_workflow()
         session["account_id"] = account.id
         session["role"] = account.role.value if hasattr(account.role, 'value') else account.role
         return redirect(url_for(redirect_endpoint))
 
     return None
-
-
 
 @auth_bp.route("/student/register", methods=["GET", "POST"], endpoint="student_register")
 def initiate_student_onboarding():
@@ -152,14 +144,12 @@ def initiate_student_onboarding():
                 primary_phone=primary_phone,
                 secondary_phone=secondary_phone
             )
-            
-            # Handle Resume Upload
+    
             resume_file = request.files.get("resume")
             if resume_file and resume_file.filename:
                 allowed_ext = {"pdf", "doc", "docx"}
                 ext = resume_file.filename.rsplit(".", 1)[-1].lower()
                 if ext in allowed_ext:
-                    # Check file size (5MB limit)
                     resume_file.seek(0, os.SEEK_END)
                     file_size = resume_file.tell()
                     resume_file.seek(0)

@@ -131,15 +131,12 @@ def inspect_student_applications():
 
 @admin_bp.route("/blacklisted", endpoint="blacklisted")
 def view_restricted_entities():
-    # Filter by type if provided
     filter_type = request.args.get('type')
     query = BlacklistEntry.query
     if filter_type:
         query = query.filter_by(entity_type=filter_type)
     
     blacklisted_items = query.order_by(BlacklistEntry.blacklisted_at.desc()).all()
-    
-    # Enrich blacklisted items with names/identifiers
     for item in blacklisted_items:
         item.display_name = "Unknown"
         if item.entity_type == 'student':
@@ -178,9 +175,7 @@ def view_restricted_entities():
 @admin_bp.route("/blacklist/<entity_type>/<int:entity_id>", methods=["POST"], endpoint="blacklist_entity")
 def blacklist_entity(entity_type, entity_id):
     reason = request.form.get("reason", "No reason provided")
-    admin_id = session.get("account_id") # Fixed from user_id to account_id
-    
-    # Check if already blacklisted
+    admin_id = session.get("account_id") 
     existing = BlacklistEntry.query.filter_by(entity_type=entity_type, entity_id=entity_id).first()
     if existing:
         flash(f"This {entity_type} is already blacklisted.", "warning")

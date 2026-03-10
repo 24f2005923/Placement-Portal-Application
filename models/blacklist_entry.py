@@ -5,7 +5,7 @@ class BlacklistEntry(db.Model):
     __tablename__ = "blacklist_entries"
 
     id = db.Column(db.Integer, primary_key=True)
-    entity_type = db.Column(db.String(50), nullable=False)  # student, company, drive, application
+    entity_type = db.Column(db.String(50), nullable=False)  
     entity_id = db.Column(db.Integer, nullable=False)
     reason = db.Column(db.String(500), nullable=True)
     

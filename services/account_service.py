@@ -3,10 +3,6 @@ from models import Account, ApprovalLog
 from models.enums import AccountState
 
 def verify_student_account(admin_id, student_account_id, action):
-    """
-    Handles transition of student account from PENDING_VERIFICATION to ACTIVE or REJECTED.
-    Ensures state transition validation and logs the action.
-    """
     student_account = Account.query.get(student_account_id)
     if not student_account:
         raise ValueError("Student account not found.")
@@ -37,10 +33,6 @@ def verify_student_account(admin_id, student_account_id, action):
     
     return student_account
 def verify_company_account(admin_id, company_account_id, action):
-    """
-    Handles transition of company account from PENDING_VERIFICATION to ACTIVE or REJECTED.
-    Ensures state transition validation and logs the action.
-    """
     company_account = Account.query.get(company_account_id)
     if not company_account:
         raise ValueError("Company account not found.")

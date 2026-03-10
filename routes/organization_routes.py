@@ -106,8 +106,6 @@ def edit_recruitment_drive(drive_id):
         return redirect(url_for("auth.company_login"))
     
     drive = PlacementDrive.query.get_or_404(drive_id)
-    
-    # Security: Ensure company owns the drive
     if drive.company_id != profile.id:
         flash("Unauthorized access to edit this drive.", "danger")
         return redirect(url_for("company.create_drive"))
@@ -122,9 +120,6 @@ def edit_recruitment_drive(drive_id):
             deadline_str = request.form.get("application_deadline")
             if deadline_str:
                 drive.application_deadline = datetime.strptime(deadline_str, '%Y-%m-%d')
-            
-            # Reset approval status to pending after edit if needed (optional)
-            # drive.approval_status = DriveStatus.PENDING
             
             db.session.commit()
             flash("Drive details updated successfully.", "success")
@@ -146,7 +141,6 @@ def remove_recruitment_drive(drive_id):
     
     drive = PlacementDrive.query.get_or_404(drive_id)
     
-    # Security checking
     if drive.company_id != profile.id:
         flash("Unauthorized access to delete this drive.", "danger")
         return redirect(url_for("company.create_drive"))
@@ -254,8 +248,6 @@ def view_student_resume(student_id):
     if not profile:
         return redirect(url_for("auth.company_login"))
     
-    # Security check: Ensure company has access to this student's resume
-    # Check if student is shortlisted for any of this company's drives
     drive_ids = [d.id for d in PlacementDrive.query.filter_by(company_id=profile.id).all()]
     if not drive_ids:
         flash("Unauthorized access.", "danger")
@@ -278,10 +270,8 @@ def view_student_resume(student_id):
         flash("Resume not uploaded by student.", "info")
         return redirect(url_for("company.shortlisted_students"))
     
-    # Serve file from configured upload folder
     upload_dir = os.path.join(current_app.root_path, current_app.config['UPLOAD_FOLDER'])
     
-    # Check if file exists on disk
     if not os.path.exists(os.path.join(upload_dir, student.cv_filename)):
         flash(f"Resume file '{student.cv_filename}' not found on server. Please contact the student.", "danger")
         return redirect(url_for("company.shortlisted_students"))

@@ -3,10 +3,6 @@ from flask import session, redirect, url_for, flash
 from models import Account, AccountState
 
 def active_account_required(f):
-    """
-    Decorator to restrict access to accounts that are in the ACTIVE state.
-    Redirects to a pending/rejected page or login if the state is invalid.
-    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         account_id = session.get("account_id")

@@ -4,9 +4,6 @@ from models import StudentProfile, CompanyProfile
 from datetime import datetime
 
 def get_current_student_profile():
-    """Return the StudentProfile for the currently logged-in student account.
-    Uses flask.g to cache the profile for the duration of the request.
-    """
     if 'current_student_profile' not in g:
         account_id = session.get("account_id")
         if account_id:
@@ -17,9 +14,6 @@ def get_current_student_profile():
 
 
 def get_current_company_profile():
-    """Return the CompanyProfile for the currently logged-in company account.
-    Uses flask.g to cache the profile for the duration of the request.
-    """
     if 'current_company_profile' not in g:
         account_id = session.get("account_id")
         if account_id:
