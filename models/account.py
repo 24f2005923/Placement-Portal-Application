@@ -36,3 +36,14 @@ class Account(db.Model):
 
     def __repr__(self) -> str:
         return f"<Account id={self.id} role={self.role} state={self.account_state}>"
+
+    @property
+    def is_blacklisted(self) -> bool:
+        from models.blacklist_entry import BlacklistEntry
+        if self.role == 'student':
+            entity_id = self.student_profile.id if self.student_profile else self.id
+            return BlacklistEntry.query.filter_by(entity_type='student', entity_id=entity_id).first() is not None
+        elif self.role == 'company':
+            entity_id = self.company_profile.id if self.company_profile else self.id
+            return BlacklistEntry.query.filter_by(entity_type='company', entity_id=entity_id).first() is not None
+        return False

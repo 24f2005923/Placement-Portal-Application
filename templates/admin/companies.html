@@ -47,7 +47,11 @@
                                 <td>{{ company.hr_contact }}</td>
                                 <td>{{ company.work_email }}</td>
                                 <td>
+                                    {% if company.is_blacklisted %}
+                                    <span class="badge bg-danger">Blacklisted</span>
+                                    {% else %}
                                     {{ company.account.account_state | status_badge }}
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">

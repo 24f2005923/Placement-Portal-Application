@@ -45,7 +45,11 @@
                                 <td>{{ account.student_profile.full_name if account.student_profile else 'N/A' }}</td>
                                 <td>{{ account.login_identifier }}</td>
                                 <td>
+                                    {% if account.is_blacklisted %}
+                                    <span class="badge bg-danger">Blacklisted</span>
+                                    {% else %}
                                     {{ account.account_state | status_badge }}
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">

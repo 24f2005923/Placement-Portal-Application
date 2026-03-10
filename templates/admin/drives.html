@@ -53,7 +53,11 @@
                             <div class="small fw-bold">{{ drive.application_deadline | format_drive_date }}</div>
                         </td>
                         <td>
+                            {% if drive.is_blacklisted %}
+                            <span class="badge bg-danger">Blacklisted</span>
+                            {% else %}
                             {{ drive.approval_status | status_badge }}
+                            {% endif %}
                         </td>
                         <td class="text-center pe-4">
                             {% if drive.approval_status.value == 'pending' %}

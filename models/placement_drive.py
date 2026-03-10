@@ -29,3 +29,13 @@ class PlacementDrive(db.Model):
 
     def __repr__(self):
         return f"<Drive {self.job_title} - {self.approval_status}>"
+
+    @property
+    def is_blacklisted(self) -> bool:
+        from models.blacklist_entry import BlacklistEntry
+        is_drive_blacklisted = BlacklistEntry.query.filter_by(entity_type='drive', entity_id=self.id).first() is not None
+        if is_drive_blacklisted:
+            return True
+        if self.company_id:
+            return BlacklistEntry.query.filter_by(entity_type='company', entity_id=self.company_id).first() is not None
+        return False

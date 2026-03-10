@@ -25,3 +25,8 @@ class CompanyProfile(db.Model):
 
     def __repr__(self) -> str:
         return f"<CompanyProfile name={self.name} reg_id={self.company_id_field}>"
+
+    @property
+    def is_blacklisted(self) -> bool:
+        from models.blacklist_entry import BlacklistEntry
+        return BlacklistEntry.query.filter_by(entity_type='company', entity_id=self.id).first() is not None
