@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash
 from database import db
-from models import Account, StudentProfile, CompanyProfile, AccountRole, AccountState
+from models import Account, StudentProfile, CompanyProfile, AccountRole, AccountState, BlacklistEntry, ApprovalAction
 from datetime import datetime
 import re
 import os
@@ -25,7 +25,43 @@ def _execute_portal_entry(role_enum, redirect_endpoint):
     ).first()
 
     if account and check_password_hash(account.password_hash, password):
+        # Prevent login for restricted account states
+        account_state = (account.account_state or "").lower()
+        print(f"DEBUG: Login for {identifier}, Role: {role_enum}, State: {account_state}")
+        if account_state in [AccountState.REJECTED.value.lower(), AccountState.SUSPENDED.value.lower()]:
+            print(f"DEBUG: Denied due to account state: {account_state}")
+            flash("Your account has been restricted. Please contact the administrator.", "danger")
+            return redirect(url_for(request.endpoint))
+
+        # Check for blacklisted status
+        blacklisted = False
+        if role_enum == AccountRole.STUDENT and account.student_profile:
+            blacklisted = BlacklistEntry.query.filter_by(
+                entity_type='student', 
+                entity_id=account.student_profile.id
+            ).first() is not None
+            if blacklisted: print(f"DEBUG: Denied due to student blacklist")
+        elif role_enum == AccountRole.COMPANY and account.company_profile:
+            blacklisted = BlacklistEntry.query.filter_by(
+                entity_type='company', 
+                entity_id=account.company_profile.id
+            ).first() is not None
+            if blacklisted: print(f"DEBUG: Denied due to company blacklist")
+            
+            # Additional check for company approval status
+            if not blacklisted:
+                approval_status = getattr(account.company_profile.approval_status, 'value', account.company_profile.approval_status)
+                print(f"DEBUG: Company approval status: {approval_status}")
+                if (approval_status or "").lower() == ApprovalAction.REJECTED.value.lower():
+                    print(f"DEBUG: Denied due to company approval status")
+                    blacklisted = True
+
+        if blacklisted:
+            flash("Your account has been restricted. Please contact the administrator.", "danger")
+            return redirect(url_for(request.endpoint))
+
         account.record_login()
+        db.session.commit() # Ensure last_login_at is saved
         finalize_workflow()
         session["account_id"] = account.id
         session["role"] = account.role.value if hasattr(account.role, 'value') else account.role

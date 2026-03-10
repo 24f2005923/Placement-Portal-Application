@@ -1,0 +1,35 @@
+﻿python : C:\Users\pooja\On
+eDrive\Desktop\Placement-P
+ortal-Application\verify_a
+uth.py:78: SAWarning: 
+DELETE statement on table 
+'student_profiles' 
+expected to delete 1 
+row(s); 0 were matched.  
+Please set confirm_deleted
+_rows=False within the 
+mapper configuration to 
+prevent this warning.
+At line:1 char:1
++ python verify_auth.py > 
+diag_clean.txt 2>&1; 
+powershell -Command "Get 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (C  
+  :\Users\pooja\...t th   
+ is warning.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+  db.session.commit()
+VERIFY: Account test_student@college.edu, Role: student, State: active
+Testing active user login...
+DEBUG: Login for test_student@college.edu, Role: AccountRole.STUDENT, State: active
+DEBUG: Denied due to student blacklist
+DEBUG: Status: 302, Location: /student/login
+FAILURE: Active user login failed.
