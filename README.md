@@ -1,0 +1,1 @@
+The Placement Portal Application is a system designed to manage student placements in an organization. It allows students to apply for jobs, admin to manage applications, and companies to add placement drives and review students.
